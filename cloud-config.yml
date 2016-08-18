@@ -1,0 +1,70 @@
+#cloud-config\n
+coreos:
+  etcd2:
+    discovery: 
+    advertise-client-urls: http://$
+    initial-advertise-peer-urls: http://$
+    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001
+    listen-peer-urls: http://0.0.0.0:2380
+  units:
+    - name: etcd2.service
+      command: start
+    - name: fleet.service
+      command: start
+    - name: startup.service
+      command: start
+      content: |
+        [Unit]
+        Description=Run startup script
+        After=docker.service
+        Requires=docker.service
+
+        [Service]
+        Type=oneshot
+        ExecStart=/home/core/startup.sh
+
+        [Install]
+        WantedBy=multi-user.target
+    - name: glassfish.service
+      command: start
+      content: |
+        [Unit]
+        Description=Glassfish Dataverse container
+        After=docker.service
+        [Service]
+        Restart=always
+        ExecStartPre=/bin/sh -c 'eval $(aws ecr get-login --region us-east-1)'
+        ExecStartPre=-/usr/bin/docker kill dataverse
+        ExecStartPre=-/usr/bin/docker rm dataverse
+        ExecStartPre=-/usr/bin/docker pull 079491139214.dkr.ecr.us-east-1.amazonaws.com/dataverse
+        ExecStartPre=/home/core/dvn-init.sh
+        ExecStart=/usr/bin/docker run --name=dataverse -p 8080:8080 079491139214.dkr.ecr.us-east-1.amazonaws.com/dataverse
+        ExecStop=/usr/bin/docker stop dataverse
+        [X-Fleet]
+        Global=true
+write_files:
+  - path: "/home/core/startup.sh"
+    permissions: "0755"
+    content: |
+      #!/bin/sh
+
+      #Run the docker login command
+      docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh
+
+      # Execute ./install only once for the entire stack's lifetime
+      if [ $(curl http://127.0.0.1:2379/v2/keys/dvninit?prevExist=false -XPUT -d value=initializing | jq '.errorCode') == "null" ]; then
+        echo -e "ELBFQDN\n\nADMINEMAIL\nMAILSERVER\nPOSTGRESADDR\n\nPOSTGRESADMINPW\n\nPOSTGRESUSERPW\nSOLRIP:PORT\n\n\n\n\n\ny\n\n\n" | docker run --name=dataverse-init DOCKERREPOSTRINGe dvinstall/install
+        docker kill dataverse-init
+        docker rm dataverse-init
+        curl http://127.0.0.1:2379/v2/keys/dvninit -XPUT -d value=done
+      else
+        while true;
+        do
+          if [ "$(etcdctl get /dvninit)"x == "done"x ];
+          then
+              break;
+          fi
+          sleep 10
+        done
+      fi
+      

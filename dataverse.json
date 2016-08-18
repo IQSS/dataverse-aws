@@ -1,0 +1,950 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Mappings": {
+    "RegionMap": {
+      "eu-central-1": {
+        "AMI": "ami-cfca25a0",
+        "SolrAMI": "ami-d816e2b7"
+      },
+      "ap-northeast-1": {
+        "AMI": "ami-72ae4313",
+        "SolrAMI": "ami-ae8973cf"
+      },
+      "us-gov-west-1": {
+        "AMI": "ami-c42b94a5"
+      },
+      "ap-northeast-2": {
+        "AMI": "ami-83ce05ed",
+        "SolrAMI": "ami-52ff353c"
+      },
+      "sa-east-1": {
+        "AMI": "ami-038c076f",
+        "SolrAMI": "ami-3cea7d50"
+      },
+      "ap-southeast-2": {
+        "AMI": "ami-4b7a5428",
+        "SolrAMI": "ami-935366f0"
+      },
+      "ap-southeast-1": {
+        "AMI": "ami-d704d5b4",
+        "SolrAMI": "ami-04d10e67"
+      },
+      "us-east-1": {
+        "AMI": "ami-6160910c",
+        "SolrAMI": "ami-947af083"
+      },
+      "us-west-2": {
+        "AMI": "ami-32a85152",
+        "SolrAMI": "ami-eeb47b8e"
+      },
+      "us-west-1": {
+        "AMI": "ami-79473c19",
+        "SolrAMI": "ami-3ce1a05c"
+      },
+      "eu-west-1": {
+        "AMI": "ami-c36effb0",
+        "SolrAMI": "ami-127c1161"
+      }
+    }
+  },
+  "Metadata": {
+    "AWS::CloudFormation::Designer": {
+      "48b77908-f5c9-4750-950e-951edc67326a": {
+        "size": {
+          "width": 960,
+          "height": 1410
+        },
+        "position": {
+          "x": 360,
+          "y": 330
+        },
+        "z": 1,
+        "embeds": [
+          "ffb5df4e-fa20-4d05-b73d-e3d870e7b037",
+          "9fedc8e6-d9de-4052-8d90-680ee3b5f455",
+          "f590a422-7d41-47d4-9dbf-7b4976e93fb8",
+          "70fc1555-fa7b-4d59-a24c-c6d644ce24c0",
+          "4c6e8729-aa56-4364-b526-d7496ccc9d0a"
+        ]
+      },
+      "4c6e8729-aa56-4364-b526-d7496ccc9d0a": {
+        "size": {
+          "width": 150,
+          "height": 150
+        },
+        "position": {
+          "x": 360,
+          "y": 360
+        },
+        "z": 2,
+        "parent": "48b77908-f5c9-4750-950e-951edc67326a",
+        "embeds": []
+      },
+      "70fc1555-fa7b-4d59-a24c-c6d644ce24c0": {
+        "size": {
+          "width": 150,
+          "height": 150
+        },
+        "position": {
+          "x": 360,
+          "y": 510
+        },
+        "z": 2,
+        "parent": "48b77908-f5c9-4750-950e-951edc67326a",
+        "embeds": []
+      },
+      "f590a422-7d41-47d4-9dbf-7b4976e93fb8": {
+        "size": {
+          "width": 150,
+          "height": 150
+        },
+        "position": {
+          "x": 360,
+          "y": 690
+        },
+        "z": 2,
+        "parent": "48b77908-f5c9-4750-950e-951edc67326a",
+        "embeds": []
+      },
+      "7c17ebc1-32dd-41c3-9eea-1b9d54ed5a19": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 420,
+          "y": 150
+        },
+        "z": 1,
+        "embeds": []
+      },
+      "32fa0d6f-dbd6-4663-b814-b07d8d023841": {
+        "source": {
+          "id": "7c17ebc1-32dd-41c3-9eea-1b9d54ed5a19"
+        },
+        "target": {
+          "id": "48b77908-f5c9-4750-950e-951edc67326a"
+        },
+        "z": 1
+      },
+      "6b56a771-b7b0-490e-9de2-5db71ab1bb51": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 870,
+          "y": 780
+        },
+        "z": 3,
+        "parent": "9fedc8e6-d9de-4052-8d90-680ee3b5f455",
+        "embeds": [],
+        "references": [
+          "7c17ebc1-32dd-41c3-9eea-1b9d54ed5a19"
+        ],
+        "dependson": [
+          "32fa0d6f-dbd6-4663-b814-b07d8d023841"
+        ]
+      },
+      "9fedc8e6-d9de-4052-8d90-680ee3b5f455": {
+        "size": {
+          "width": 570,
+          "height": 540
+        },
+        "position": {
+          "x": 540,
+          "y": 480
+        },
+        "z": 2,
+        "parent": "48b77908-f5c9-4750-950e-951edc67326a",
+        "embeds": [
+          "6b56a771-b7b0-490e-9de2-5db71ab1bb51"
+        ]
+      },
+      "9349ab8f-db2f-4f09-8b20-184713479fa6": {
+        "source": {
+          "id": "9fedc8e6-d9de-4052-8d90-680ee3b5f455"
+        },
+        "target": {
+          "id": "4c6e8729-aa56-4364-b526-d7496ccc9d0a"
+        },
+        "z": 2
+      },
+      "fdac9290-9a57-4ad0-9b42-7b53c966b99b": {
+        "source": {
+          "id": "9fedc8e6-d9de-4052-8d90-680ee3b5f455"
+        },
+        "target": {
+          "id": "70fc1555-fa7b-4d59-a24c-c6d644ce24c0"
+        },
+        "z": 2
+      },
+      "0eacd567-81bc-45f1-b7c6-fd372ce45bb0": {
+        "source": {
+          "id": "9fedc8e6-d9de-4052-8d90-680ee3b5f455"
+        },
+        "target": {
+          "id": "f590a422-7d41-47d4-9dbf-7b4976e93fb8"
+        },
+        "z": 2
+      },
+      "7318f017-b502-45ca-acd8-7a107959240d": {
+        "source": {
+          "id": "6b56a771-b7b0-490e-9de2-5db71ab1bb51"
+        },
+        "target": {
+          "id": "7c17ebc1-32dd-41c3-9eea-1b9d54ed5a19"
+        },
+        "z": 6
+      },
+      "f3cac15f-485a-4d06-a4ad-61af4c204eca": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 180,
+          "y": 930
+        },
+        "z": 1,
+        "embeds": [],
+        "isconnectedto": [
+          "4c6e8729-aa56-4364-b526-d7496ccc9d0a",
+          "f590a422-7d41-47d4-9dbf-7b4976e93fb8",
+          "70fc1555-fa7b-4d59-a24c-c6d644ce24c0"
+        ],
+        "dependson": [
+          "7c17ebc1-32dd-41c3-9eea-1b9d54ed5a19"
+        ]
+      },
+      "eacacbf5-5c64-42d5-a0f9-cbc871b4e408": {
+        "source": {
+          "id": "f3cac15f-485a-4d06-a4ad-61af4c204eca"
+        },
+        "target": {
+          "id": "4c6e8729-aa56-4364-b526-d7496ccc9d0a"
+        },
+        "z": 2
+      },
+      "e9520938-4eac-4b1b-8d57-a17ad5585715": {
+        "source": {
+          "id": "f3cac15f-485a-4d06-a4ad-61af4c204eca"
+        },
+        "target": {
+          "id": "f590a422-7d41-47d4-9dbf-7b4976e93fb8"
+        },
+        "z": 3
+      },
+      "70c9002a-4b81-4bff-901f-a90b56572d37": {
+        "source": {
+          "id": "f3cac15f-485a-4d06-a4ad-61af4c204eca"
+        },
+        "target": {
+          "id": "70fc1555-fa7b-4d59-a24c-c6d644ce24c0"
+        },
+        "z": 4
+      },
+      "cf0f91b6-ef78-4dc0-acdc-cbda681bffaa": {
+        "source": {
+          "id": "f3cac15f-485a-4d06-a4ad-61af4c204eca"
+        },
+        "target": {
+          "id": "f0ed0f4a-bb5c-45f2-a3d0-c6974cf84a97"
+        },
+        "z": 5
+      },
+      "6e6c0e72-8d9c-4ec4-953d-19d1a95b58a6": {
+        "source": {
+          "id": "6b56a771-b7b0-490e-9de2-5db71ab1bb51"
+        },
+        "target": {
+          "id": "32fa0d6f-dbd6-4663-b814-b07d8d023841"
+        },
+        "z": 6
+      },
+      "e35bcccb-757c-492f-85d2-50f686c49c14": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 180,
+          "y": 600
+        },
+        "z": 1,
+        "embeds": [],
+        "isconnectedto": [
+          "f3cac15f-485a-4d06-a4ad-61af4c204eca",
+          "f590a422-7d41-47d4-9dbf-7b4976e93fb8",
+          "70fc1555-fa7b-4d59-a24c-c6d644ce24c0",
+          "4c6e8729-aa56-4364-b526-d7496ccc9d0a"
+        ],
+        "isassociatedwith": [
+          "f7cc32a4-5afa-4f0d-8557-293e58566300"
+        ]
+      },
+      "f7cc32a4-5afa-4f0d-8557-293e58566300": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 60,
+          "y": 600
+        },
+        "z": 1,
+        "embeds": [],
+        "ismemberof": [
+          "ffb5df4e-fa20-4d05-b73d-e3d870e7b037"
+        ]
+      },
+      "070f0643-0866-404a-b5b7-64f148141ab9": {
+        "source": {
+          "id": "e35bcccb-757c-492f-85d2-50f686c49c14"
+        },
+        "target": {
+          "id": "f7cc32a4-5afa-4f0d-8557-293e58566300"
+        },
+        "z": 7
+      },
+      "57904a55-deb6-4669-8447-30fce8cdbd31": {
+        "source": {
+          "id": "e35bcccb-757c-492f-85d2-50f686c49c14"
+        },
+        "target": {
+          "id": "f3cac15f-485a-4d06-a4ad-61af4c204eca"
+        },
+        "z": 8
+      },
+      "4ecce1b0-644b-49ee-a874-92dbd76d7b7a": {
+        "source": {
+          "id": "e35bcccb-757c-492f-85d2-50f686c49c14"
+        },
+        "target": {
+          "id": "f0ed0f4a-bb5c-45f2-a3d0-c6974cf84a97"
+        },
+        "z": 9
+      },
+      "5ac2919a-dfc9-4ddd-9aea-e5983ec038f2": {
+        "source": {
+          "id": "e35bcccb-757c-492f-85d2-50f686c49c14"
+        },
+        "target": {
+          "id": "f590a422-7d41-47d4-9dbf-7b4976e93fb8"
+        },
+        "z": 10
+      },
+      "8cc98925-1041-42d6-9450-687f4473272d": {
+        "source": {
+          "id": "e35bcccb-757c-492f-85d2-50f686c49c14"
+        },
+        "target": {
+          "id": "70fc1555-fa7b-4d59-a24c-c6d644ce24c0"
+        },
+        "z": 11
+      },
+      "0f80f9a0-014d-4a6d-9c87-0a498341fc26": {
+        "source": {
+          "id": "e35bcccb-757c-492f-85d2-50f686c49c14"
+        },
+        "target": {
+          "id": "4c6e8729-aa56-4364-b526-d7496ccc9d0a"
+        },
+        "z": 12
+      },
+      "78959c9a-d1d5-4032-bc51-356939ff40a1": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": -60,
+          "y": 500
+        },
+        "z": 0
+      },
+      "da66fbff-8b0f-4d61-9f5b-1a39bdbbb885": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": 60,
+          "y": 90
+        },
+        "z": 1,
+        "embeds": []
+      },
+      "ffb5df4e-fa20-4d05-b73d-e3d870e7b037": {
+        "size": {
+          "width": 60,
+          "height": 60
+        },
+        "position": {
+          "x": -200,
+          "y": 610
+        },
+        "z": 0,
+        "parent": "48b77908-f5c9-4750-950e-951edc67326a",
+        "embeds": []
+      },
+      "128762db-d52e-4700-9994-e0c7ba6c96e4": {
+        "source": {
+          "id": "f3cac15f-485a-4d06-a4ad-61af4c204eca"
+        },
+        "target": {
+          "id": "7c17ebc1-32dd-41c3-9eea-1b9d54ed5a19"
+        },
+        "z": 11
+      }
+    }
+  },
+  "Parameters": {
+    "InstanceType": {
+      "Description": "EC2 HVM instance type (m3.medium, etc).",
+      "Type": "String",
+      "Default": "t2.medium",
+      "ConstraintDescription": "Must be a valid EC2 HVM instance type."
+    },
+    "ClusterSize": {
+      "Default": "3",
+      "MinValue": "3",
+      "MaxValue": "6",
+      "Description": "Number of nodes in cluster (3-6).",
+      "Type": "Number"
+    },
+    "DiscoveryURL": {
+      "Description": "An unique etcd cluster discovery URL. Grab a new token from https://discovery.etcd.io/new?size=<your cluster size>",
+      "Type": "String"
+    },
+    "AdvertisedIPAddress": {
+      "Description": "Use 'private' if your etcd cluster is within one region or 'public' if it spans regions or cloud providers.",
+      "Default": "private",
+      "AllowedValues": [
+        "private",
+        "public"
+      ],
+      "Type": "String"
+    },
+    "AllowSSHFrom": {
+      "Description": "The net block (CIDR) that SSH is available to.",
+      "Default": "0.0.0.0/0",
+      "Type": "String"
+    },
+    "KeyPair": {
+      "Description": "The name of an EC2 Key Pair to allow SSH access to the instance.",
+      "Type": "AWS::EC2::KeyPair::KeyName"
+    },
+    "PostgreSQLServerInstanceType": {
+      "Description": "RDS instance type (m3.medium, etc).",
+      "Type": "String",
+      "Default": "db.m4.large",
+      "ConstraintDescription": "Must be a valid EC2 instance type."
+    },
+    "PostgreSQLPassword": {
+      "Default": "root1234",
+      "NoEcho": "true",
+      "Description": "The database admin account password",
+      "Type": "String",
+      "MinLength": "8"
+    },
+    "PostgreSQLAllocatedStorage": {
+      "Default": "5",
+      "Description": "The size of the database (Gb)",
+      "Type": "Number",
+      "MinValue": "5",
+      "MaxValue": "6144",
+      "ConstraintDescription": "must be between 5+"
+    },
+    "PostgreSQLMultiAZ": {
+      "Description": "Should MySQL be MultiAZ?",
+      "Type": "CommaDelimitedList",
+      "AllowedValues": [
+        "Yes",
+        "No"
+      ],
+      "Default": "No"
+    },
+    "DockerTag": {
+      "Description": "What Docker tag should be used for pulling and launching containers?",
+      "Type": "String",
+      "Default": "latest"
+    }
+  },
+  "Resources": {
+    "VPC": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.3.64.0/24"
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "48b77908-f5c9-4750-950e-951edc67326a"
+        }
+      }
+    },
+    "Subnet1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.3.64.0/26",
+        "MapPublicIpOnLaunch": true,
+        "AvailabilityZone" : {
+          "Fn::Select" : [ "0", { "Fn::GetAZs" : "" } ]
+        },
+        "VpcId": {
+          "Ref": "VPC"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "4c6e8729-aa56-4364-b526-d7496ccc9d0a"
+        }
+      }
+    },
+    "Subnet2": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.3.64.64/26",
+        "MapPublicIpOnLaunch": true,
+        "AvailabilityZone" : {
+          "Fn::Select" : [ "1", { "Fn::GetAZs" : "" } ]
+        },
+        "VpcId": {
+          "Ref": "VPC"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "70fc1555-fa7b-4d59-a24c-c6d644ce24c0"
+        }
+      }
+    },
+    "Subnet3": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.3.64.128/26",
+        "MapPublicIpOnLaunch": true,
+        "AvailabilityZone" : {
+          "Fn::Select" : [ "2", { "Fn::GetAZs" : "" } ]
+        },
+        "VpcId": {
+          "Ref": "VPC"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "f590a422-7d41-47d4-9dbf-7b4976e93fb8"
+        }
+      }
+    },
+    "EC2VPCG4A5F6": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "InternetGatewayId": {
+          "Ref": "Gateway"
+        },
+        "VpcId": {
+          "Ref": "VPC"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "32fa0d6f-dbd6-4663-b814-b07d8d023841"
+        }
+      }
+    },
+    "Gateway": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {},
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "7c17ebc1-32dd-41c3-9eea-1b9d54ed5a19"
+        }
+      }
+    },
+    "RouteTable": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "9fedc8e6-d9de-4052-8d90-680ee3b5f455"
+        }
+      }
+    },
+    "DefaultRoute": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "RouteTable"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "Gateway"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "6b56a771-b7b0-490e-9de2-5db71ab1bb51"
+        }
+      },
+      "DependsOn": [
+        "EC2VPCG4A5F6"
+      ]
+    },
+    "EC2SRTAD8F": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "RouteTable"
+        },
+        "SubnetId": {
+          "Ref": "Subnet1"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "9349ab8f-db2f-4f09-8b20-184713479fa6"
+        }
+      }
+    },
+    "EC2SRTA1UAUC": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "RouteTable"
+        },
+        "SubnetId": {
+          "Ref": "Subnet2"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "fdac9290-9a57-4ad0-9b42-7b53c966b99b"
+        }
+      }
+    },
+    "EC2SRTA4W3GC": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "RouteTable"
+        },
+        "SubnetId": {
+          "Ref": "Subnet3"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "0eacd567-81bc-45f1-b7c6-fd372ce45bb0"
+        }
+      }
+    },
+    "GlassfishLB": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "CrossZone": "true",
+        "Listeners": [
+          {
+            "LoadBalancerPort": "80",
+            "InstancePort": "8080",
+            "Protocol": "HTTP"
+          }
+        ],
+        "HealthCheck": {
+          "Target": "HTTP:8080/",
+          "HealthyThreshold": "3",
+          "UnhealthyThreshold": "5",
+          "Interval": "30",
+          "Timeout": "5"
+        },
+        "Subnets": [
+          {
+            "Ref": "Subnet1"
+          },
+          {
+            "Ref": "Subnet3"
+          },
+          {
+            "Ref": "Subnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "f3cac15f-485a-4d06-a4ad-61af4c204eca"
+        }
+      },
+      "DependsOn": [
+        "Gateway"
+      ]
+    },
+    "GlassfishASG": {
+      "Type": "AWS::AutoScaling::AutoScalingGroup",
+      "Properties": {
+        "AvailabilityZones": [ 
+          { "Fn::Select": [ "0", {"Fn::GetAZs": ""}]},
+          { "Fn::Select": [ "1", {"Fn::GetAZs": ""}]},
+          { "Fn::Select": [ "2", {"Fn::GetAZs": ""}]}
+        ],
+        "LaunchConfigurationName": {
+          "Ref": "GlassfishLC"
+        },
+        "MinSize": "3",
+        "MaxSize": "6",
+        "DesiredCapacity": {
+          "Ref": "ClusterSize"
+        },
+        "LoadBalancerNames": [
+          {
+            "Ref": "GlassfishLB"
+          }
+        ],
+        "VPCZoneIdentifier": [
+          {
+            "Ref": "Subnet3"
+          },
+          {
+            "Ref": "Subnet2"
+          },
+          {
+            "Ref": "Subnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "e35bcccb-757c-492f-85d2-50f686c49c14"
+        }
+      }
+    },
+    "DockerContainerRegistryAccess": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "DockerContainerRegistryAccess",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:GetRepositoryPolicy",
+                "ecr:DescribeRepositories",
+                "ecr:ListImages",
+                "ecr:BatchGetImage"
+              ],
+              "Resource": "*"
+            }
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "DataverseResourceRole"
+          }
+        ]
+      }
+    },
+    "DataverseResourceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "ec2.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Path": "/"
+      }
+    },
+    "DataverseInstanceProfile": {
+      "Type": "AWS::IAM::InstanceProfile",
+      "Properties": {
+        "Path": "/",
+        "Roles": [
+          {
+            "Ref": "DataverseResourceRole"
+          }
+        ]
+      }
+    },
+    "CoreOSSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "CoreOS SecurityGroup",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": {
+              "Ref": "AllowSSHFrom"
+            }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "2379",
+            "ToPort": "2380",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "8080",
+            "ToPort": "8080",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ],
+        "VpcId": {
+          "Ref": "VPC"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "ffb5df4e-fa20-4d05-b73d-e3d870e7b037"
+        }
+      }
+    },
+    "GlassfishLC": {
+      "Type": "AWS::AutoScaling::LaunchConfiguration",
+      "Properties": {
+        "IamInstanceProfile": {
+          "Ref": "DataverseInstanceProfile"
+        },
+        "ImageId": {
+          "Fn::FindInMap": [
+            "RegionMap",
+            {
+              "Ref": "AWS::Region"
+            },
+            "AMI"
+          ]
+        },
+        "InstanceType": {
+          "Ref": "InstanceType"
+        },
+        "KeyName": {
+          "Ref": "KeyPair"
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "CoreOSSecurityGroup"
+          }
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#cloud-config\n\n",
+                "coreos:\n",
+                "  etcd2:\n",
+                "    discovery: ",
+                {
+                  "Ref": "DiscoveryURL"
+                },
+                "\n",
+                "    advertise-client-urls: http://$",
+                {
+                  "Ref": "AdvertisedIPAddress"
+                },
+                "_ipv4:2379\n",
+                "    initial-advertise-peer-urls: http://$",
+                {
+                  "Ref": "AdvertisedIPAddress"
+                },
+                "_ipv4:2380\n",
+                "    listen-client-urls: http://0.0.0.0:2379,http://0.0.0.0:4001\n",
+                "    listen-peer-urls: http://0.0.0.0:2380\n",
+                "  units:\n",
+                "    - name: etcd2.service\n",
+                "      command: start\n",
+                "    - name: fleet.service\n",
+                "      command: start\n",
+                "    - name: startup.service\n",
+                "      command: start\n",
+                "      content: |\n",
+                "        [Unit]\n",
+                "        Description=Run startup script\n",
+                "        After=docker.service\n",
+                "        Requires=docker.service\n",
+                "\n",
+                "        [Service]\n",
+                "        Type=oneshot\n",
+                "        ExecStart=/home/core/startup.sh\n",
+                "\n",
+                "        [Install]\n",
+                "        WantedBy=multi-user.target\n",
+                "    - name: glassfish.service\n",
+                "      command: start\n",
+                "      content: |\n",
+                "        [Unit]\n",
+                "        Description=Glassfish Dataverse container\n",
+                "        After=docker.service\n\n",
+                "        [Service]\n",
+                "        Restart=always\n",
+                "        ExecStartPre=/bin/sh -c 'eval $(aws ecr get-login --region us-east-1)'\n",
+                "        ExecStartPre=-/usr/bin/docker kill dataverse\n",
+                "        ExecStartPre=-/usr/bin/docker rm dataverse\n",
+                "        ExecStartPre=-/usr/bin/docker pull 079491139214.dkr.ecr.us-east-1.amazonaws.com/dataverse\n",
+                "        ExecStart=/usr/bin/docker run --name=dataverse -p 8080:8080 079491139214.dkr.ecr.us-east-1.amazonaws.com/dataverse\n",
+                "        ExecStop=/usr/bin/docker stop dataverse\n\n",
+                "        [X-Fleet]\n",
+                "        Global=true\n",
+		"write_files:\n",
+		"  - path: \"/home/core/startup.sh\"\n",
+		"    permissions: \"0755\"\n",
+		"    content: |\n",
+		"      #!/bin/sh\n",
+		"\n",
+		"      #Run the docker login command\n",
+		"      docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\n"
+		              ]
+            ]
+          }
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "f7cc32a4-5afa-4f0d-8557-293e58566300"
+        }
+      }
+    },
+    "Postgres": {
+      "Type": "AWS::RDS::DBInstance",
+      "Properties": {
+        "DBName": "dvndb",
+        "AllocatedStorage": {
+          "Ref": "PostgreSQLAllocatedStorage"
+        },
+        "DBInstanceClass": {
+          "Ref": "PostgreSQLServerInstanceType"
+        },
+        "Engine": "postgres",
+        "MasterUsername": "root",
+        "MasterUserPassword": {
+          "Ref": "PostgreSQLPassword"
+        }
+      },
+      "Metadata": {
+        "AWS::CloudFormation::Designer": {
+          "id": "da66fbff-8b0f-4d61-9f5b-1a39bdbbb885"
+        }
+      }
+    }
+  }
+}
