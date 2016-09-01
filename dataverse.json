@@ -800,6 +800,22 @@
         }
       }
     },
+    "DataverseS3Policy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "DataverseBucketAccess",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "s3:*",
+              "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", {"Ref" : "DataverseBucket"}, "/*"]]}
+            }
+          ]
+        }
+      }
+    },
     "DockerContainerRegistryAccess": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
@@ -845,9 +861,9 @@
                         "Principal": {
                             "AWS": { "Fn::GetAtt": [ "DataverseResourceRole", "Arn" ] }
                         },
-                        "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "DataverseBucket" } , "/*" ]]},
+                        "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "DataverseBucket" } ]]},
 
-                        "Action": "s3:*"
+                        "Action": ["s3:*"]
                     }
                 ]
             }
@@ -1056,6 +1072,7 @@
                 "        Requires=docker.service\n",
                 "\n",
                 "        [Service]\n",
+                "        TimeoutStartSec=3min\n",
                 "        ExecStartPre=-/usr/bin/docker kill s3fs\n",
                 "        ExecStartPre=-/usr/bin/docker rm s3fs\n",
                 "        ExecStartPre=-/usr/bin/docker rm s3fs\n",
@@ -1080,7 +1097,7 @@
                 "      ExecStartPre=-/usr/bin/docker kill dataverse\n",
                 "      ExecStartPre=-/usr/bin/docker rm dataverse\n",
                 "      ExecStartPre=-/usr/bin/docker pull 079491139214.dkr.ecr.us-east-1.amazonaws.com/dataverse\n",
-                "      ExecStart=/usr/bin/docker run --name=dataverse -p 8080:8080",
+                "      ExecStart=/usr/bin/docker run --name=dataverse -v /mnt/dvn:/var/dvn -p 8080:8080",
                 " -e DB_HOST=", { "Fn::GetAtt": ["Postgres", "Endpoint.Address"]}, 
                 " -e DB_PASS=", { "Ref": "PostgreSQLDataversePassword"},
                 " -e DB_USER=", "dvnapp",
