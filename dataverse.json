@@ -406,7 +406,8 @@
     },
     "EmailServer": {
       "Description": "Relay server to send mail", 
-      "Type": "String"
+      "Type": "String”,
+      "Default": “smtp.vt.edu”
     },
     "InstanceType": {
       "Description": "EC2 HVM instance type (m3.medium, etc).",
