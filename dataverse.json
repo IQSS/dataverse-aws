@@ -1190,9 +1190,9 @@
         "KeyName": {
           "Ref": "KeyPair"
         },
-        "SecurityGroups": [
+        "SecurityGroupIds": [
           {
-            "Ref": "SolrSecurityGroup"
+            "Fn::GetAtt": [ "SolrSecurityGroup", "GroupId" ]
           }
         ]
       }
