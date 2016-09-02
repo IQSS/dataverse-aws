@@ -406,8 +406,8 @@
     },
     "EmailServer": {
       "Description": "Relay server to send mail", 
-      "Type": "String”,
-      "Default": “smtp.vt.edu”
+      "Type": "String",
+      "Default": "smtp.vt.edu"
     },
     "InstanceType": {
       "Description": "EC2 HVM instance type (m3.medium, etc).",
@@ -1167,6 +1167,34 @@
         "AWS::CloudFormation::Designer": {
           "id": "f7cc32a4-5afa-4f0d-8557-293e58566300"
         }
+      }
+    },
+    "Solr": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "IamInstanceProfile": {
+          "Ref": "DataverseInstanceProfile"
+        },
+        "ImageId": {
+          "Fn::FindInMap": [
+            "RegionMap",
+            {
+              "Ref": "AWS::Region"
+            },
+            "SolrAMI"
+          ]
+        },
+        "InstanceType": {
+          "Ref": "SolrInstanceType"
+        },
+        "KeyName": {
+          "Ref": "KeyPair"
+        },
+        "SecurityGroups": [
+          {
+            "Ref": "SolrSecurityGroup"
+          }
+        ]
       }
     },
     "Postgres": {
