@@ -804,6 +804,9 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyName": "DataverseBucketAccess",
+        "Groups": [],
+        "Roles": [ { "Ref": "DataverseResourceRole" } ],
+        "Users": [],
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
