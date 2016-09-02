@@ -813,11 +813,6 @@
             {
               "Effect": "Allow",
               "Action": "s3:*",
-              "Principal": {
-                "AWS": {
-                  "Fn::GetAtt": [ "DataverseResourceRole", "Arn" ]
-                  }
-              },
               "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", {"Ref" : "DataverseBucket"}, "/*"]]}
             }
           ]
