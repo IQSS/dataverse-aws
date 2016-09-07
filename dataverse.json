@@ -4,46 +4,56 @@
     "RegionMap": {
       "eu-central-1": {
         "AMI": "ami-cfca25a0",
-        "SolrAMI": "ami-d816e2b7"
+        "SolrAMI": "ami-d816e2b7",
+        "Centos7AMI": "ami-9bf712f4"
       },
       "ap-northeast-1": {
         "AMI": "ami-72ae4313",
-        "SolrAMI": "ami-ae8973cf"
+        "SolrAMI": "ami-ae8973cf",
+        "Centos7AMI": "ami-eec1c380"
       },
       "us-gov-west-1": {
         "AMI": "ami-c42b94a5"
       },
       "ap-northeast-2": {
         "AMI": "ami-83ce05ed",
-        "SolrAMI": "ami-52ff353c"
+        "SolrAMI": "ami-52ff353c",
+        "Centos7AMI": "ami-c74789a9"
       },
       "sa-east-1": {
         "AMI": "ami-038c076f",
-        "SolrAMI": "ami-3cea7d50"
+        "SolrAMI": "ami-3cea7d50",
+        "Centos7AMI": "ami-26b93b4a"
       },
       "ap-southeast-2": {
         "AMI": "ami-4b7a5428",
-        "SolrAMI": "ami-935366f0"
+        "SolrAMI": "ami-935366f0",
+        "Centos7AMI": "ami-fedafc9d"
       },
       "ap-southeast-1": {
         "AMI": "ami-d704d5b4",
-        "SolrAMI": "ami-04d10e67"
+        "SolrAMI": "ami-04d10e67",
+        "Centos7AMI": "ami-f068a193"
       },
       "us-east-1": {
         "AMI": "ami-6160910c",
-        "SolrAMI": "ami-947af083"
+        "SolrAMI": "ami-947af083",
+        "Centos7AMI": "ami-6d1c2007"
       },
       "us-west-2": {
         "AMI": "ami-32a85152",
-        "SolrAMI": "ami-eeb47b8e"
+        "SolrAMI": "ami-eeb47b8e",
+        "Centos7AMI": "ami-d2c924b2"
       },
       "us-west-1": {
         "AMI": "ami-79473c19",
-        "SolrAMI": "ami-3ce1a05c"
+        "SolrAMI": "ami-3ce1a05c",
+        "Centos7AMI": "ami-af4333cf"
       },
       "eu-west-1": {
         "AMI": "ami-c36effb0",
-        "SolrAMI": "ami-127c1161"
+        "SolrAMI": "ami-127c1161",
+        "Centos7AMI": "ami-7abd0209"
       }
     }
   },
@@ -926,7 +936,7 @@
         "EC2VpcId": { "Ref": "VPC" },
         "DBSecurityGroupIngress": [
           {
-            "EC2SecurityGroupId": { "Ref": "CoreOSSecurityGroup" }
+            "EC2SecurityGroupId": { "Ref": "GlassfishSecurityGroup" }
           }
         ]
       }
@@ -940,7 +950,7 @@
             "IpProtocol": "tcp",
             "FromPort": "8983",
             "ToPort": "8983",
-            "SourceSecurityGroupId": { "Ref": "CoreOSSecurityGroup" }
+            "SourceSecurityGroupId": { "Ref": "GlassfishSecurityGroup" }
           }
         ],
         "VpcId": {
@@ -971,7 +981,7 @@
         }
       }
     },
-    "CoreOSSecurityGroup": {
+    "GlassfishSecurityGroup": {
       "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "CoreOS SecurityGroup",
@@ -999,11 +1009,11 @@
     "CoreOSEtcdIngressRule": {
       "Type": "AWS::EC2::SecurityGroupIngress",
       "Properties": {
-          "GroupId": { "Ref": "CoreOSSecurityGroup" },
+          "GroupId": { "Ref": "GlassfishSecurityGroup" },
           "IpProtocol": "tcp",
           "FromPort": "2379",
           "ToPort": "2380",
-          "SourceSecurityGroupId": { "Ref": "CoreOSSecurityGroup" }
+          "SourceSecurityGroupId": { "Ref": "GlassfishSecurityGroup" }
       }
     },
     "GlassfishLC": {
@@ -1029,7 +1039,7 @@
         },
         "SecurityGroups": [
           {
-            "Ref": "CoreOSSecurityGroup"
+            "Ref": "GlassfishSecurityGroup"
           }
         ],
         "UserData": {
@@ -1092,7 +1102,6 @@
                 "        TimeoutStartSec=3min\n",
                 "        ExecStartPre=-/usr/bin/docker kill s3fs\n",
                 "        ExecStartPre=-/usr/bin/docker rm s3fs\n",
-                "        ExecStartPre=-/usr/bin/docker rm s3fs\n",
                 "        ExecStart=/usr/bin/docker run --rm --name s3fs --cap-add mknod",
                 " --cap-add sys_admin --device=/dev/fuse -v /mnt/dvn:/mnt:shared",
                 " xueshanf/s3fs /usr/bin/s3fs -f -o allow_other -o use_cache=/tmp",
@@ -1101,9 +1110,10 @@
                 "        ExecStop=-/usr/bin/docker stop %n\n",
                 "        RestartSec=5\n",
                 "        Restart=always\n",
-				"write_files:\n",
+
+								"write_files:\n",
                 "  - path: \"/home/core/glassfish.service\"\n",
-				"    permissions: \"0755\"\n",
+								"    permissions: \"0755\"\n",
                 "    content: |\n",
                 "      [Unit]\n",
                 "      Description=Glassfish Dataverse container\n",
@@ -1128,10 +1138,10 @@
                 "      ExecStop=/usr/bin/docker stop dataverse\n\n",
                 "      [X-Fleet]\n",
                 "      Global=true\n",
-				"  - path: \"/home/core/startup.sh\"\n",
-				"    permissions: \"0755\"\n",
-				"    content: |\n",
-				"      #!/bin/sh\n\n",
+								"  - path: \"/home/core/startup.sh\"\n",
+								"    permissions: \"0755\"\n",
+								"    content: |\n",
+								"      #!/bin/sh\n\n",
                 "      # Modify Docker to share host mount namespace\n",
                 "      cp /usr/lib/systemd/system/docker.service /etc/systemd/system/\n",
                 "      sed -i 's/MountFlags=slave/#MountFlags=slave/' /etc/systemd/system/docker.service\n",
@@ -1141,21 +1151,22 @@
                 "      mount --bind /mnt/dvn /mnt/dvn\n",
                 "      mount --make-shared /mnt/dvn\n\n",
 
-				"      #Run the docker login command\n",
-				"      docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\n\n",
+								"      #Run the docker login command\n",
+								"      docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\n\n",
                 "      # Execute ./install only once for the entire stack's lifetime\n",
                 "      if [ $(curl http://127.0.0.1:2379/v2/keys/dvninit?prevExist=false -XPUT -d value=initializing | jq '.errorCode') == \"null\" ]; then\n",
                 "        echo -e \"",
-	                { "Fn::GetAtt": ["GlassfishLB", "DNSName"] }, "\\n\\n",
-    	            { "Ref": "AdminEmail" }, "\\n", 
-        	        { "Ref": "EmailServer"}, "\\n",
-            	    { "Fn::GetAtt": ["Postgres", "Endpoint.Address"]}, "\\n",
-                	{ "Fn::GetAtt": ["Postgres", "Endpoint.Port"]}, "\\n", 
-	                { "Ref": "PostgreSQLPassword" }, "\\n\\n",
+	              { "Fn::GetAtt": ["GlassfishLB", "DNSName"] }, "\\n\\n",
+    	          { "Ref": "AdminEmail" }, "\\n", 
+        	      { "Ref": "EmailServer"}, "\\n",
+            	  { "Fn::GetAtt": ["Postgres", "Endpoint.Address"]}, "\\n",
+              	{ "Fn::GetAtt": ["Postgres", "Endpoint.Port"]}, "\\n", 
+	              { "Ref": "PostgreSQLPassword" }, "\\n\\n",
                 "\\n",
-    	            { "Ref": "PostgreSQLDataversePassword" }, "\\n",
+    	          { "Ref": "PostgreSQLDataversePassword" }, "\\n",
                 "LOCAL", "\\n\\n\\n\\n\\n\\ny\\n\\n\\n\" | docker run -i --name=dataverse-init ",
-        	        { "Ref": "DockerRepoString" },
+        	      { "Ref": "DockerRepoString" },
+
                 " bash -c \"cd dvinstall; ./install\"\n",
                 "        docker kill dataverse-init\n",
                 "        docker rm dataverse-init\n",
@@ -1185,6 +1196,37 @@
     "Solr": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
+      	"Metadata": {
+      		"AWS::CloudFormation::Init": {
+      			"configSets": {
+      				"default": [ "config1", "config2" ]
+      			},
+      			"config1": {
+      				"files": {
+      					"/usr/local/solr-4.6.0.tgz": {
+      						"source": "https://archive.apache.org/dist/lucene/solr/4.6.0/solr-4.6.0.tgz"
+      					},
+      					"/usr/local/dvinstall.zip": {
+      						"source": "https://github.com/IQSS/dataverse/releases/download/v4.5/dvinstall.zip"
+      					}
+      				},
+      				"commands": {
+      					"cwd": "/usr/local",
+      					"command": [
+      						"tar -zxvf solr-4.6.0.tgz",
+      						"unzip dvinstall.zip"
+      					]
+      				}
+      			},
+      			"config2": {
+      				"files": {
+      					"/usr/local/solr-4.6.0/example/solr/collection1/conf/schema.xml": {
+      						"source": "/usr/local/dvinstall/schema.xml"
+      					}
+      				}
+      			}
+      		}
+      	},
         "IamInstanceProfile": {
           "Ref": "DataverseInstanceProfile"
         },
@@ -1194,7 +1236,7 @@
             {
               "Ref": "AWS::Region"
             },
-            "SolrAMI"
+            "Centos7AMI"
           ]
         },
         "InstanceType": {
