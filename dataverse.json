@@ -614,6 +614,19 @@
         }
       }
     },
+    "SolrSubnet1": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.3.64.240/28",
+        "MapPublicIpOnLaunch": true,
+        "AvailabilityZone" : {
+          "Fn::Select" : [ "1", { "Fn::GetAZs" : "" } ]
+        },
+        "VpcId": {
+          "Ref": "VPC"
+        }
+      }
+    },
     "EC2VPCG4A5F6": {
       "Type": "AWS::EC2::VPCGatewayAttachment",
       "Properties": {
@@ -1189,6 +1202,9 @@
         },
         "KeyName": {
           "Ref": "KeyPair"
+        },
+        "SubnetId": {
+        	"Ref": "SolrSubnet1"
         },
         "SecurityGroupIds": [
           {
