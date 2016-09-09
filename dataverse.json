@@ -1204,37 +1204,6 @@
     "Solr": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-      	"Metadata": {
-      		"AWS::CloudFormation::Init": {
-      			"configSets": {
-      				"default": [ "config1", "config2" ]
-      			},
-      			"config1": {
-      				"files": {
-      					"/usr/local/solr-4.6.0.tgz": {
-      						"source": "https://archive.apache.org/dist/lucene/solr/4.6.0/solr-4.6.0.tgz"
-      					},
-      					"/usr/local/dvinstall.zip": {
-      						"source": "https://github.com/IQSS/dataverse/releases/download/v4.5/dvinstall.zip"
-      					}
-      				},
-      				"commands": {
-      					"cwd": "/usr/local",
-      					"command": [
-      						"tar -zxvf solr-4.6.0.tgz",
-      						"unzip dvinstall.zip"
-      					]
-      				}
-      			},
-      			"config2": {
-      				"files": {
-      					"/usr/local/solr-4.6.0/example/solr/collection1/conf/schema.xml": {
-      						"source": "/usr/local/dvinstall/schema.xml"
-      					}
-      				}
-      			}
-      		}
-      	},
         "IamInstanceProfile": {
           "Ref": "DataverseInstanceProfile"
         },
