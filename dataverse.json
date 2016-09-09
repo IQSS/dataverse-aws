@@ -1252,7 +1252,56 @@
           {
             "Fn::GetAtt": [ "SolrSecurityGroup", "GroupId" ]
           }
-        ]
+        ],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [
+              "",
+              [
+                "#cloud-config\n\n",
+                "coreos:\n",
+                "  units:\n",
+                "    - name: startup.service\n",
+                "      command: start\n",
+                "      content: |\n",
+                "        [Unit]\n",
+                "        Description=Run startup script\n",
+                "        After=docker.service\n",
+                "        Requires=docker.service\n",
+                "\n",
+                "        [Service]\n",
+                "        Type=oneshot\n",
+                "        ExecStart=/home/core/startup.sh\n",
+                "\n",
+                "        [Install]\n",
+                "        WantedBy=multi-user.target\n",
+                "\n",
+                "    - name: solr4.service\n",
+                "      command: start\n",
+                "      content: |\n",
+                "        [Unit]\n",
+                "        Description=Solr 4 container\n",
+                "        After=docker.service\n\n",
+
+                "        [Service]\n",
+                "        Restart=always\n",
+                "        ExecStartPre=-/usr/bin/docker kill solr4\n",
+                "        ExecStartPre=-/usr/bin/docker rm solr4\n",
+                "        ExecStartPre=-/usr/bin/docker pull 079491139214.dkr.ecr.us-east-1.amazonaws.com/solr4\n",
+                "        ExecStart=/usr/bin/docker run --name=solr4 -p 8983:8983",
+                "        ExecStop=?????????",
+                "\n",
+								"write_files:\n",
+								"  - path: \"/home/core/startup.sh\"\n",
+								"    permissions: \"0755\"\n",
+								"    content: |\n",
+								"      #!/bin/sh\n\n",
+								"      #Run the docker login command\n",
+								"      docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\n\n"
+              ]
+            ]
+          }
+        }
       }
     },
     "Postgres": {
