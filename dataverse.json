@@ -1264,7 +1264,7 @@
                 "        Restart=always\n",
                 "        ExecStartPre=-/usr/bin/docker kill solr4\n",
                 "        ExecStartPre=-/usr/bin/docker rm solr4\n",
-                "        ExecStartPre=-/usr/bin/docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\n",
+                "        ExecStartPre=/usr/bin/docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\n",
                 "        ExecStartPre=/usr/bin/docker pull 079491139214.dkr.ecr.us-east-1.amazonaws.com/solr4\n",
                 "        ExecStart=/usr/bin/docker run --name=solr4 -p 8983:8983 079491139214.dkr.ecr.us-east-1.amazonaws.com/solr4",
                 "        ExecStop=/usr/bin/docker stop solr4",
