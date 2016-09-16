@@ -747,6 +747,12 @@
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
         "CrossZone": "true",
+        "LBCookieStickinessPolicy": [
+          {
+            "CookieExpirationPolicy": "3600",
+            "PolicyName": "GlassfishLBStickinessPolicy"
+          }
+        ],
         "Listeners": [
           {
             "LoadBalancerPort": "80",
