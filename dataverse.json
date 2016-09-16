@@ -749,7 +749,7 @@
         "CrossZone": "true",
         "LBCookieStickinessPolicy": [
           {
-            "CookieExpirationPolicy": "3600",
+            "CookieExpirationPeriod": "3600",
             "PolicyName": "GlassfishLBStickinessPolicy"
           }
         ],
