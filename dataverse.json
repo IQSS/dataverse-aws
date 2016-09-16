@@ -948,6 +948,14 @@
         "SecurityGroupIngress": [
           {
             "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": {
+              "Ref": "AllowSSHFrom"
+            }
+          },
+          {
+            "IpProtocol": "tcp",
             "FromPort": "8983",
             "ToPort": "8983",
             "SourceSecurityGroupId": { "Ref": "GlassfishSecurityGroup" }
@@ -1172,7 +1180,7 @@
                   "\\n",
                   "\\n",
                   { "Ref": "PostgreSQLDataversePassword" }, "\\n",
-                  { "Fn::GetAtt": ["Solr", "PrivateDNSName"]}, ":8983\\n",
+                  { "Fn::GetAtt": ["Solr", "PrivateDnsName"]}, ":8983\\n",
                   "\\n",
                   "\\n",
                   "\\n",
