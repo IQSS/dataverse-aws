@@ -743,6 +743,17 @@
         }
       }
     },
+    "SolrRouteTableAssociation": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "RouteTable"
+        },
+        "SubnetId": {
+          "Ref": "SolrSubnet1"
+        }
+      }
+    },
     "GlassfishLB": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
@@ -1031,6 +1042,7 @@
       }
     },
     "GlassfishLC": {
+      "DependsOn": ["Solr"],
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "IamInstanceProfile": {
@@ -1094,8 +1106,10 @@
                 "        Description=Run startup script\n",
                 "        After=docker.service\n",
                 "        After=etcd2.service\n",
+                "        After=network-online.target\n",
                 "        Requires=docker.service\n",
                 "        Requires=etcd2.service\n",
+                "        Requires=network-online.target\n",
                 "\n",
                 "        [Service]\n",
                 "        Type=oneshot\n",
@@ -1108,15 +1122,16 @@
                 "      content: |\n",
                 "        [Unit]\n",
                 "        Description=Mount s3fs\n",
-                "        After=startup.service\n",
                 "        After=docker.service\n",
-                "        Requires=startup.service\n",
+                "        After=network-online.target\n",
+                "        After=startup.service\n",
                 "        Requires=docker.service\n",
+                "        Requires=network-online.target\n",
+                "        Requires=startup.service\n",
                 "\n",
                 "        [Service]\n",
                 "        TimeoutStartSec=3min\n",
                 "        ExecStartPre=-/usr/bin/docker kill s3fs\n",
-                "        ExecStartPre=-/usr/bin/docker rm s3fs\n",
                 "        ExecStartPre=-/usr/bin/docker rm s3fs\n",
                 "        ExecStart=/usr/bin/docker run --rm --name s3fs --cap-add mknod",
                 " --cap-add sys_admin --device=/dev/fuse -v /mnt/dvn:/mnt:shared",
@@ -1132,14 +1147,16 @@
                 "    content: |\n",
                 "      [Unit]\n",
                 "      Description=Glassfish Dataverse container\n",
-                "      After=s3fs.service\n",
                 "      After=docker.service\n",
+                "      After=network-online.target\n",
+                "      After=s3fs.service\n",
                 "\n",
                 "      [Service]\n",
                 "      Restart=always\n",
                 "      ExecStartPre=-/usr/bin/docker kill dataverse\n",
                 "      ExecStartPre=-/usr/bin/docker rm dataverse\n",
-                "      ExecStartPre=-/usr/bin/docker pull 079491139214.dkr.ecr.us-east-1.amazonaws.com/dataverse\n",
+                "      ExecStartPre=/usr/bin/docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\n",
+                "      ExecStartPre=/usr/bin/docker pull 079491139214.dkr.ecr.us-east-1.amazonaws.com/dataverse\n",
                 "      ExecStart=/usr/bin/docker run --name=dataverse -v /mnt/dvn:/var/dvn -p 8080:8080",
                 " -e DB_HOST=", { "Fn::GetAtt": ["Postgres", "Endpoint.Address"]}, 
                 " -e DB_PASS=", { "Ref": "PostgreSQLDataversePassword"},
@@ -1186,7 +1203,7 @@
                   "\\n",
                   "\\n",
                   { "Ref": "PostgreSQLDataversePassword" }, "\\n",
-                  { "Fn::GetAtt": ["Solr", "PrivateDnsName"]}, ":8983\\n",
+                  { "Fn::GetAtt": ["Solr", "PublicIp"]}, ":8983\\n",
                   "\\n",
                   "\\n",
                   "\\n",
@@ -1215,11 +1232,6 @@
             ]
           }
         }
-      },
-      "Metadata": {
-        "AWS::CloudFormation::Designer": {
-          "id": "f7cc32a4-5afa-4f0d-8557-293e58566300"
-        }
       }
     },
     "Solr": {
@@ -1234,7 +1246,7 @@
             {
               "Ref": "AWS::Region"
             },
-            "Centos7AMI"
+            "AMI"
           ]
         },
         "InstanceType": {
@@ -1260,13 +1272,19 @@
                 "coreos:\n",
                 "\n",
                 "  units:\n",
+                "    - name: etcd2.service\n",
+                "      command: start\n",
+                "    - name: fleet.service\n",
+                "      command: start\n",
                 "    - name: startup.service\n",
                 "      command: start\n",
                 "      content: |\n",
                 "        [Unit]\n",
                 "        Description=Run startup script\n",
                 "        After=docker.service\n",
+                "        After=etcd2.service\n",
                 "        Requires=docker.service\n",
+                "        Requires=etcd2.service\n",
                 "\n",
                 "        [Service]\n",
                 "        Type=oneshot\n",
@@ -1281,12 +1299,16 @@
                 "        [Unit]\n",
                 "        Description=Solr 4 container\n",
                 "        After=docker.service\n",
+                "        After=etcd2.service\n",
+                "        After=network-online.target\n",
+                "        Requires=docker.service\n",
+                "        Requires=etcd2.service\n",
+                "        Requires=network-online.target\n",
                 "\n",
                 "        [Service]\n",
                 "        Restart=always\n",
                 "        ExecStartPre=-/usr/bin/docker kill solr4\n",
                 "        ExecStartPre=-/usr/bin/docker rm solr4\n",
-                "        ExecStartPre=/usr/bin/docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\n",
                 "        ExecStartPre=/usr/bin/docker pull 079491139214.dkr.ecr.us-east-1.amazonaws.com/solr4\n",
                 "        ExecStart=/usr/bin/docker run --name=solr4 -p 8983:8983 079491139214.dkr.ecr.us-east-1.amazonaws.com/solr4\n",
                 "        ExecStop=/usr/bin/docker stop solr4\n",
