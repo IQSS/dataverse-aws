@@ -1206,7 +1206,7 @@
                   "\\n",
                   "\\n",
                   { "Ref": "PostgreSQLDataversePassword" }, "\\n",
-                  { "Fn::GetAtt": ["Solr", "PrivateDnsName"]}, ":8983\\n",
+                  { "Fn::GetAtt": ["Solr", "PrivateIp"]}, ":8983\\n",
                   "\\n",
                   "\\n",
                   "\\n",
