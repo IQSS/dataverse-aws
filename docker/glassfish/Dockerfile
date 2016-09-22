@@ -36,8 +36,9 @@ RUN mv weld-osgi-bundle-2.2.10.SP1-glassfish4.jar /usr/local/glassfish4/glassfis
 
 # Install dataverse
 RUN yum install -y perl
-RUN curl -L https://github.com/IQSS/dataverse/releases/download/v4.4/dvinstall.zip -o dvinstall.zip
+RUN curl -L https://github.com/IQSS/dataverse/releases/download/v4.5/dvinstall.zip -o dvinstall.zip
 RUN unzip dvinstall.zip
+
 # Install jq
 RUN curl -L http://stedolan.github.io/jq/download/linux64/jq -o jq
 RUN chmod u+x jq
@@ -51,7 +52,9 @@ RUN cp dvinstall/jhove.conf /usr/local/glassfish4/glassfish/domains/domain1/conf
 # Specify volume for shared storage
 VOLUME /data/dvn:/usr/local/dvn/data
 
+# 
 COPY run_dataverse.sh /run_dataverse.sh
 RUN chmod u+x run_dataverse.sh
 
+# 
 CMD /run_dataverse.sh
