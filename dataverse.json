@@ -1368,7 +1368,6 @@
         "DBInstanceClass": {
           "Ref": "PostgreSQLServerInstanceType"
         },
-        "DBName": "notreal",
         "DBSecurityGroups": [ { "Ref": "PostgreSQLSecurityGroup" } ],
         "DBSubnetGroupName": { "Ref": "PostgreSQLSubnetGroup" },
         "Engine": "postgres",
