@@ -761,14 +761,15 @@
         "LBCookieStickinessPolicy": [
           {
             "CookieExpirationPeriod": "3600",
-            "PolicyName": "GlassfishLBStickinessPolicy"
+            "PolicyName": "GlassfishLBCookieStickinessPolicy"
           }
         ],
         "Listeners": [
           {
             "LoadBalancerPort": "80",
             "InstancePort": "8080",
-            "Protocol": "HTTP"
+            "Protocol": "HTTP",
+            "PolicyNames": [ "GlassfishLBCookieStickinessPolicy" ]
           }
         ],
         "HealthCheck": {
