@@ -1156,6 +1156,7 @@
                 "\n",
                 "      [Service]\n",
                 "      Restart=always\n",
+                "      RestartSec=5\n",
                 "      ExecStartPre=-/usr/bin/docker kill dataverse\n",
                 "      ExecStartPre=-/usr/bin/docker rm dataverse\n",
                 "      ExecStartPre=/usr/bin/bash -c \"docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\"\n",
