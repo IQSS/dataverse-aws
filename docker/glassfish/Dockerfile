@@ -25,33 +25,16 @@ ENV DOI_USERNAME ${DOI_USERNAME}
 ENV DVN_INIT false
 
 # Install java-1.8.0 and set as default
-RUN yum install -y java-1.8.0-openjdk-devel
+RUN yum install -y java-1.8.0-openjdk-devel unzip perl postgresql
 #RUN alternatives --set java /usr/lib/jvm/jre-1.8.0-openjdk.x86_64/bin/java
 
 # Install glassfish
-RUN yum install -y unzip
-RUN curl -L http://download.oracle.com/glassfish/4.1/release/glassfish-4.1.zip -o glassfish-4.1.zip
-RUN unzip glassfish-4.1.zip
-RUN mv glassfish4 /usr/local/
+RUN curl -L http://download.oracle.com/glassfish/4.1/release/glassfish-4.1.zip -o /glassfish-4.1.zip && cd /usr/local && unzip /glassfish-4.1.zip && rm /glassfish-4.1.zip
 # Patch Weld for dataverse
-RUN rm /usr/local/glassfish4/glassfish/modules/weld-osgi-bundle.jar
-RUN curl -L http://central.maven.org/maven2/org/jboss/weld/weld-osgi-bundle/2.2.10.SP1/weld-osgi-bundle-2.2.10.SP1-glassfish4.jar -o weld-osgi-bundle-2.2.10.SP1-glassfish4.jar
-RUN mv weld-osgi-bundle-2.2.10.SP1-glassfish4.jar /usr/local/glassfish4/glassfish/modules/weld-osgi-bundle.jar
+RUN rm /usr/local/glassfish4/glassfish/modules/weld-osgi-bundle.jar && cd /usr/local/glassfish4/glassfish/modules/ && curl -L http://central.maven.org/maven2/org/jboss/weld/weld-osgi-bundle/2.2.10.SP1/weld-osgi-bundle-2.2.10.SP1-glassfish4.jar -o weld-osgi-bundle-2.2.10.SP1-glassfish4.jar
 
-# Install dataverse
-RUN yum install -y perl
-RUN curl -L https://github.com/IQSS/dataverse/releases/download/v4.5/dvinstall.zip -o dvinstall.zip
-RUN unzip dvinstall.zip
-
-# Install jq
-RUN curl -L http://stedolan.github.io/jq/download/linux64/jq -o jq
-RUN chmod u+x jq
-RUN mv jq /usr/bin
-
-# Install jdbc driver
-RUN cp dvinstall/pgdriver/postgresql-9.1-902.jdbc4.jar /usr/local/glassfish4/glassfish/lib/
-# Install jhove config
-RUN cp dvinstall/jhove.conf /usr/local/glassfish4/glassfish/domains/domain1/config
+# Install dataverse, jq, jdbc driver, and jhove config
+RUN curl -L https://github.com/IQSS/dataverse/releases/download/v4.5/dvinstall.zip -o /dvinstall.zip && unzip dvinstall.zip && rm dvinstall.zip && curl -L http://stedolan.github.io/jq/download/linux64/jq -o /usr/bin/jq && chmod u+x /usr/bin/jq && cp /dvinstall/pgdriver/postgresql-9.1-902.jdbc4.jar /usr/local/glassfish4/glassfish/lib/ && cp /dvinstall/jhove.conf /usr/local/glassfish4/glassfish/domains/domain1/config
 
 # Specify volume for shared storage
 VOLUME /data/dvn:/usr/local/dvn/data
@@ -59,6 +42,8 @@ VOLUME /data/dvn:/usr/local/dvn/data
 # 
 COPY run_dataverse.sh /run_dataverse.sh
 RUN chmod u+x run_dataverse.sh
+COPY install /dvinstall/install
+RUN chmod u+x /dvinstall/install
 
 # 
 CMD /run_dataverse.sh
