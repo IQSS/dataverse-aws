@@ -51,12 +51,11 @@ RUN curl -L https://github.com/IQSS/dataverse/releases/download/v4.5/dvinstall.z
 # Specify volume for shared storage
 VOLUME /data/dvn:/usr/local/dvn/data
 
-# 
+# Add install and run scripts
 COPY run_dataverse.sh /run_dataverse.sh
 RUN chmod u+x run_dataverse.sh
 COPY install /dvinstall/install
 RUN chmod u+x /dvinstall/install
-#RUN sed -i -e "s/. \x22\x27 NOSUPERUSER CREATEDB CREATEROLE INHERIT LOGIN\x22;/. \x22\x27 NOSUPERUSER CREATEDB CREATEROLE INHERIT LOGIN; grant $CONFIG_DEFAULTS{\x27POSTGRES_USER\x27} to postgres\x22;/g" /dvinstall/install
 
 # 
 CMD /run_dataverse.sh
