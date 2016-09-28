@@ -465,9 +465,14 @@
       ],
       "Type": "String"
     },
-    "DockerRepoString": {
+    "DockerRepoStringGlassfish": {
         "Description": "The docker url for the glassfish containainer",
         "Default": "079491139214.dkr.ecr.us-east-1.amazonaws.com/dataverse",
+        "Type": "String"
+    },
+    "DockerRepoStringSolr": {
+        "Description": "The docker url for the solr4 containainer",
+        "Default": "079491139214.dkr.ecr.us-east-1.amazonaws.com/solr4",
         "Type": "String"
     },
     "AllowSSHFrom": {
@@ -516,8 +521,13 @@
       ],
       "Default": "No"
     },
-    "DockerTag": {
-      "Description": "What Docker tag should be used for pulling and launching containers?",
+    "DockerTagGlassfish": {
+      "Description": "What Docker tag should be used for pulling and launching glassfish containers?",
+      "Type": "String",
+      "Default": "latest"
+    },
+    "DockerTagSolr": {
+      "Description": "What Docker tag should be used for pulling and launching solr containers?",
       "Type": "String",
       "Default": "latest"
     }
@@ -1179,7 +1189,7 @@
                 "      ExecStartPre=-/usr/bin/docker kill dataverse\n",
                 "      ExecStartPre=-/usr/bin/docker rm dataverse\n",
                 "      ExecStartPre=/usr/bin/bash -c \"docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\"\n",
-                "      ExecStartPre=/usr/bin/docker pull ", { "Ref": "DockerRepoString"}, ":", { "Ref": "DockerTag" }, "\n",
+                "      ExecStartPre=/usr/bin/docker pull ", { "Ref": "DockerRepoStringGlassfish"}, ":", { "Ref": "DockerTagGlassfish" }, "\n",
                 "      ExecStartPre=/usr/bin/bash -c \"mount | grep s3fs\"\n",
                 "      ExecStart=/usr/bin/docker run --name=dataverse -v /mnt/dvn:/var/dvn -p 8080:8080",
                 " -e DB_HOST=", { "Fn::GetAtt": ["Postgres", "Endpoint.Address"]}, 
@@ -1194,7 +1204,7 @@
                 " -e DOI_AUTHORITY=", { "Ref": "DOIAuthority" },
                 " -e DOI_PASSWORD=", { "Ref": "DOIPassword" },
                 " -e DOI_USERNAME=", { "Ref": "DOIUsername" },
-                " 079491139214.dkr.ecr.us-east-1.amazonaws.com/dataverse:", { "Ref": "DockerTag" }, "\n",
+                " ", { "Ref": "DockerRepoStringGlassfish"}, ":", { "Ref": "DockerTagGlassfish" }, "\n",
                 "      ExecStop=/usr/bin/docker stop dataverse\n",
                 "\n",
                 "      [X-Fleet]\n",
@@ -1239,10 +1249,9 @@
                   "y",
                   "\\n",
                   "\\n",
-                  "\\n\" | docker run -i --name=dataverse-init ", { "Ref": "DockerRepoString" },
-                " bash -c \"cd dvinstall; ./install\"\n",
-                "        docker kill dataverse-init\n",
-                "        docker rm dataverse-init\n",
+                  "\\n\" | docker run -i --name=dataverse-init ", { "Ref": "DockerRepoStringGlassfish" },
+                " bash -c \"cd dvinstall; sed -i 's/NOSUPERUSER CREATEDB CREATEROLE INHERIT LOGIN/NOSUPERUSER CREATEDB CREATEROLE INHERIT LOGIN; grant $CONFIG_DEFAULTS{'POSTGRES_USER'} to postgres;/' install; ./install\"\n",
+                "        docker stop dataverse-init\n",
                 "        fleetctl submit /home/core/glassfish.service\n",
                 "        curl http://127.0.0.1:2379/v2/keys/dvninit -XPUT -d value=done\n",
                 "        fleetctl start glassfish.service\n",
@@ -1339,8 +1348,8 @@
                 "        ExecStartPre=-/usr/bin/docker kill solr4\n",
                 "        ExecStartPre=-/usr/bin/docker rm solr4\n",
                 "        ExecStartPre=/usr/bin/bash -c \"docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\"\n",
-                "        ExecStartPre=/usr/bin/docker pull 079491139214.dkr.ecr.us-east-1.amazonaws.com/solr4\n",
-                "        ExecStart=/usr/bin/docker run --name=solr4 -p 8983:8983 079491139214.dkr.ecr.us-east-1.amazonaws.com/solr4\n",
+                "        ExecStartPre=/usr/bin/docker pull ", { "Ref": "DockerRepoStringSolr" }, ":", { "Ref": "DockerTagSolr" }, "\n",
+                "        ExecStart=/usr/bin/docker run --name=solr4 -p 8983:8983 ", { "Ref": "DockerRepoStringSolr" }, ":", { "Ref": "DockerTagSolr" }, "\n",
                 "        ExecStop=/usr/bin/docker stop solr4\n",
                 "\n",
 								"write_files:\n",
