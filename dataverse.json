@@ -1250,7 +1250,7 @@
                   "\\n",
                   "\\n",
                   "\\n\" | docker run -i --name=dataverse-init ", { "Ref": "DockerRepoStringGlassfish" },
-                " bash -c \"cd dvinstall; sed -i 's/NOSUPERUSER CREATEDB CREATEROLE INHERIT LOGIN/NOSUPERUSER CREATEDB CREATEROLE INHERIT LOGIN; grant $CONFIG_DEFAULTS{'POSTGRES_USER'} to postgres;/' install; ./install\"\n",
+                " bash -c \"cd dvinstall; ./install\"\n",
                 "        docker stop dataverse-init\n",
                 "        fleetctl submit /home/core/glassfish.service\n",
                 "        curl http://127.0.0.1:2379/v2/keys/dvninit -XPUT -d value=done\n",
