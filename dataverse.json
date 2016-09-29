@@ -57,6 +57,49 @@
       }
     }
   },
+  "Metadata": {
+    "AWS::CloudFormation::Interface": {
+      "ParameterGroups": [
+        {
+          "Label": { "default": "Database" },
+          "Parameters": [
+            "PostgreSQLServerInstanceType",
+            "PostgreSQLAllocatedStorage",
+            "PostgreSQLMultiAZ",
+            "PostgreSQLPassword",
+            "PostgreSQLDataversePassword",
+            "DBSnapshotName"
+          ]
+        },
+        {
+          "Label": { "default": "Digital Object Identifier" },
+          "Parameters": [
+            "DOIAuthority",
+            "DOIUsername",
+            "DOIPassword"
+          ]
+        },
+        {
+          "Label": { "default": "Glassfish" },
+          "Parameters": [
+            "ClusterSize",
+            "DiscoveryURL",
+            "InstanceType",
+            "DockerRepoStringGlassfish",
+            "DockerTagGlassfish"
+          ]
+        },
+        {
+          "Label": { "default": "Solr" },
+          "Parameters": [
+            "SolrInstanceType",
+            "DockerRepoStringSolr",
+            "DockerTagSolr"
+          ]
+        }
+      ]
+    }
+  },
   "Parameters": {
     "DOIAuthority": {
       "Description": "Digital Object Identifier minting organization shoulder (EZID fake default: 10.5072/FK2)",
