@@ -101,6 +101,11 @@
     }
   },
   "Parameters": {
+    "DBSnapshotName": {
+      "Description": "Restore database from existing snapshot (leave empty to create from scratch)",
+      "Type": "String",
+      "Default": ""
+    },
     "DOIAuthority": {
       "Description": "Digital Object Identifier minting organization shoulder (EZID fake default: 10.5072/FK2)",
       "Type": "String",
