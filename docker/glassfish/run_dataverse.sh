@@ -13,10 +13,10 @@ LANG=en_US.UTF-8; export LANG
 "${ASADMIN}" stop-domain "${GLASSFISH_DOMAIN}"
 
 # delete old credentials before creating new ones
-[ "${DOI_USERNAME}"x != ""x ] && "${ASADMIN}" delete-jvm-options "-Ddoi.username=apitest"
-[ "${DOI_USERNAME}"x != ""x ] && "${ASADMIN}" create-jvm-options "-Ddoi.username=${DOI_USERNAME}"
+"${ASADMIN}" delete-jvm-options "-Ddoi.username=apitest"
+"${ASADMIN}" create-jvm-options "-Ddoi.username=${DOI_USERNAME}"
 
-[ "${DOI_PASSWORD}"x != ""x ] && "${ASADMIN}" delete-jvm-options "-Ddoi.password=apitest"
-[ "${DOI_PASSWORD}"x != ""x ] && "${ASADMIN}" create-jvm-options "-Ddoi.password=${DOI_PASSWORD}"
+"${ASADMIN}" delete-jvm-options "-Ddoi.password=apitest"
+"${ASADMIN}" create-jvm-options "-Ddoi.password=${DOI_PASSWORD}"
 
 "${ASADMIN}" start-domain --verbose "${GLASSFISH_DOMAIN}"
