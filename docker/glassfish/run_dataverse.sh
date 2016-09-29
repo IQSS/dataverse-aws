@@ -10,8 +10,6 @@ LANG=en_US.UTF-8; export LANG
 
 [ "${DOI_AUTHORITY}"x != ""x ] && curl -X PUT -d "${DOI_AUTHORITY}" http://localhost:8080/api/admin/settings/:Authority
 
-"${ASADMIN}" stop-domain "${GLASSFISH_DOMAIN}"
-
 # delete old credentials before creating new ones
 "${ASADMIN}" delete-jvm-options "-Ddoi.username=apitest"
 "${ASADMIN}" create-jvm-options "-Ddoi.username=${DOI_USERNAME}"
@@ -19,4 +17,5 @@ LANG=en_US.UTF-8; export LANG
 "${ASADMIN}" delete-jvm-options "-Ddoi.password=apitest"
 "${ASADMIN}" create-jvm-options "-Ddoi.password=${DOI_PASSWORD}"
 
+"${ASADMIN}" stop-domain "${GLASSFISH_DOMAIN}"
 "${ASADMIN}" start-domain --verbose "${GLASSFISH_DOMAIN}"
