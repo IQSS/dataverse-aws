@@ -410,14 +410,28 @@
     }
   },
   "Parameters": {
+    "DOIAuthority": {
+      "Description": "Digital Object Identifier minting organization shoulder (EZID fake default: 10.5072/FK2)",
+      "Type": "String",
+      "Default": "10.5072/FK2"
+    },
+    "DOIPassword": {
+      "Description": "Digital Object Identifier minting organization password",
+      "Type": "String",
+      "Default": "apitest"
+    },
+    "DOIUsername": {
+      "Description": "Digital Object Identifier minting organization username",
+      "Type": "String",
+      "Default": "apitest"
+    },
     "AdminEmail": {
       "Description": "Email to send admin notifications to", 
       "Type": "String"
     },
     "EmailServer": {
       "Description": "Relay server to send mail", 
-      "Type": "String",
-      "Default": "smtp.vt.edu"
+      "Type": "String"
     },
     "InstanceType": {
       "Description": "EC2 HVM instance type (m3.medium, etc).",
@@ -769,7 +783,9 @@
             "LoadBalancerPort": "80",
             "InstancePort": "8080",
             "Protocol": "HTTP",
-            "PolicyNames": [ "GlassfishLBCookieStickinessPolicy" ]
+            "PolicyNames": [
+              "GlassfishLBCookieStickinessPolicy"
+            ]
           }
         ],
         "HealthCheck": {
@@ -1043,7 +1059,9 @@
       }
     },
     "GlassfishLC": {
-      "DependsOn": ["Solr"],
+      "DependsOn": [
+        "Solr"
+      ],
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
         "IamInstanceProfile": {
@@ -1173,6 +1191,9 @@
                 " -e HOST_ADDRESS=", { "Fn::GetAtt": ["GlassfishLB", "DNSName"] },
                 " -e SMTP_SERVER=", { "Ref": "EmailServer"},
                 " -e MEM_HEAP_SIZE=", "1536",
+                " -e DOI_AUTHORITY=", { "Ref": "DOIAuthority" },
+                " -e DOI_PASSWORD=", { "Ref": "DOIPassword" },
+                " -e DOI_USERNAME=", { "Ref": "DOIUsername" },
                 " 079491139214.dkr.ecr.us-east-1.amazonaws.com/dataverse\n",
                 "      ExecStop=/usr/bin/docker stop dataverse\n",
                 "\n",

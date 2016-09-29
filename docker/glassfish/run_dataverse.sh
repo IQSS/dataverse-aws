@@ -8,9 +8,12 @@ ${ASADMIN} deploy dvinstall/dataverse.war
 ulimit -n 32768
 LANG=en_US.UTF-8; export LANG
 
-if [ "${DVN_INIT}"x == "true"x ]; then
-    cd dvinstall && ./setup-all.sh
-    psql -U ${DB_USER} -h ${DB_HOST} -d ${DB_NAME} -f dvinstall/reference_data.sql
-fi
-${ASADMIN} stop-domain ${GLASSFISH_DOMAIN}
-$ASADMIN start-domain --verbose ${GLASSFISH_DOMAIN}
+[ "${DOI_AUTHORITY}"x != ""x ] && curl -X PUT -d "${DOI_AUTHORITY}" http://localhost:8080/api/admin/settings/:Authority
+
+"${ASADMIN}" stop-domain "${GLASSFISH_DOMAIN}"
+
+[ "${DOI_USERNAME}"x != ""x ] && "${ASADMIN}" create-jvm-options "-Ddoi.username=${DOI_USERNAME}"
+
+[ "${DOI_PASSWORD}"x != ""x ] && "${ASADMIN}" create-jvm-options "-Ddoi.password=${DOI_PASSWORD}"
+
+"${ASADMIN}" start-domain --verbose "${GLASSFISH_DOMAIN}"
