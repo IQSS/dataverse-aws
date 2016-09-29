@@ -60,7 +60,26 @@
   "Metadata": {
     "AWS::CloudFormation::Interface": {
       "ParameterLabels": {
-        "DBSnapshotName": { "default": "Restore database from snapshot" }
+        "PostgreSQLServerInstanceType": { "default": "Postgres instance type" },
+        "PostgreSQLAllocatedStorage": { "default": "Storage" },
+        "PostgreSQLMultiAZ": { "default": "Multi-AZ?" },
+        "PostgreSQLPassword": { "default": "Postgres master password" },
+        "PostgreSQLDataversePassword": { "default": "Postgres user password" },
+        "DBSnapshotName": { "default": "Restore database from snapshot" },
+
+        "DOIAuthority": { "default": "DOI authority (shoulder)" },
+        "DOIUsername": { "default": "DOI username" },
+        "DOIPassword": { "default": "DOI password" },
+
+        "ClusterSize": { "default": "Glassfish cluster size" },
+        "DiscoveryURL": { "default": "Glassfish discovery URL" },
+        "InstanceType": { "default": "Glassfish instance type" },
+        "DockerRepoStringGlassfish": { "default": "Glassfish docker repository" },
+        "DockerTagGlassfish": { "default": "Glassfish docker tag" },
+
+        "SolrInstanceType": { "default": "Solr instance type" },
+        "DockerRepoStringSolr": { "default": "Solr docker repository" },
+        "DockerTagSolr": { "default": "Solr docker tag" }
       },
       "ParameterGroups": [
         {
@@ -105,12 +124,12 @@
   },
   "Parameters": {
     "DBSnapshotName": {
-      "Description": "(leave empty to create new)",
+      "Description": "Leave empty to create new",
       "Type": "String",
       "Default": ""
     },
     "DOIAuthority": {
-      "Description": "Digital Object Identifier minting organization shoulder (EZID fake default: 10.5072/FK2)",
+      "Description": "EZID fake default is 10.5072/FK2",
       "Type": "String",
       "Default": "10.5072/FK2"
     },
@@ -166,12 +185,12 @@
     },
     "DockerRepoStringGlassfish": {
         "Description": "The docker url for the glassfish containainer",
-        "Default": "079491139214.dkr.ecr.us-east-1.amazonaws.com/dataverse",
+        "Default": "vtti/dataverse",
         "Type": "String"
     },
     "DockerRepoStringSolr": {
-        "Description": "The docker url for the solr4 containainer",
-        "Default": "079491139214.dkr.ecr.us-east-1.amazonaws.com/solr4",
+        "Description": "The docker url for the solr containainer",
+        "Default": "vtti/dataverse-solr",
         "Type": "String"
     },
     "AllowSSHFrom": {
@@ -205,14 +224,14 @@
     },
     "PostgreSQLAllocatedStorage": {
       "Default": "5",
-      "Description": "The size of the database (Gb)",
+      "Description": "Size of database (in Gb)",
       "Type": "Number",
       "MinValue": "5",
       "MaxValue": "6144",
-      "ConstraintDescription": "must be between 5+"
+      "ConstraintDescription": "must be between 5 and 6144"
     },
     "PostgreSQLMultiAZ": {
-      "Description": "Should MySQL be MultiAZ?",
+      "Description": "Multiple Availability Zones",
       "Type": "CommaDelimitedList",
       "AllowedValues": [
         "Yes",
