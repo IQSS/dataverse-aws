@@ -1,5 +1,14 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
+  "Conditions": {
+  	"UseDBSnapshot": {
+  		"Fn::Not": [
+  			{
+  				"Fn::Equals": [ { "Ref": "DBSnapshotName" }, "" ]
+  			}
+  		]
+  	}
+  },
   "Mappings": {
     "RegionMap": {
       "eu-central-1": {
@@ -1031,6 +1040,13 @@
           "Ref": "PostgreSQLServerInstanceType"
         },
         "DBSecurityGroups": [ { "Ref": "PostgreSQLSecurityGroup" } ],
+		"DBSnapshotIdentifier": {
+          "Fn::If" : [
+            "UseDBSnapshot",
+            { "Ref" : "DBSnapshotName" },
+            { "Ref" : "AWS::NoValue" }
+          ]
+        },
         "DBSubnetGroupName": { "Ref": "PostgreSQLSubnetGroup" },
         "Engine": "postgres",
         "MasterUsername": "postgres",
