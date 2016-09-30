@@ -46,7 +46,7 @@ RUN curl -L https://github.com/IQSS/dataverse/releases/download/v4.5/dvinstall.z
 	&& curl -L http://stedolan.github.io/jq/download/linux64/jq -o /usr/bin/jq \
 	&& chmod u+x /usr/bin/jq \
 	&& cp /dvinstall/pgdriver/postgresql-9.1-902.jdbc4.jar /usr/local/glassfish4/glassfish/lib/ \
-	&& cp /dvinstall/jhove.conf /usr/local/glassfish4/glassfish/domains/domain1/config
+	&& cp /dvinstall/jhove* /usr/local/glassfish4/glassfish/domains/domain1/config
 
 # Specify volume for shared storage
 VOLUME /data/dvn:/usr/local/dvn/data
