@@ -1121,7 +1121,6 @@ else
 {
     print "\nOK, done!\n";
 }
-}
 
 # Check if the App is running: 
 

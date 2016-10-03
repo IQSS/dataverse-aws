@@ -912,7 +912,7 @@
                   "\\n",
                   "\\n",
                   "\\n\" | docker run -i --name=dataverse-init ", { "Ref": "DockerRepoStringGlassfish" },
-                " bash -c \"cd dvinstall; sed -i 's/\"email\":\"dataverse@mailinator.com\"/\"email\":\"", { "Ref": "AdminEmail" }, "\"/g' /dvinstall/data/user-admin.json; ./install\"\n",
+                " bash -c \"cd dvinstall; ./install\"\n",
                 "        docker stop dataverse-init\n",
                 "        fleetctl submit /home/core/glassfish.service\n",
                 "        curl http://127.0.0.1:2379/v2/keys/dvninit -XPUT -d value=done\n",
