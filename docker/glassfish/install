@@ -6,6 +6,7 @@ use Getopt::Long;
 use Socket;
 use File::Copy;
 
+my $db_fresh_install = 1;
 my $verbose;
 my $pg_only;
 my $hostname;
@@ -754,6 +755,11 @@ else
 
     if ( ( my $exitcode = system($psql_command_dbcheck) ) == 0 ) 
     {    
+
+    # JMA: assume we are here because we are importing data from an existing installation
+    $db_fresh_install = 1;
+    goto GLASSFISH;
+
 	if ($force) 
 	{
 	    print "WARNING! Database "
@@ -876,6 +882,7 @@ if ( system( $psql_exec . "/psql -h " . $CONFIG_DEFAULTS{'POSTGRES_SERVER'} . " 
     exit 1; 
 }
 
+GLASSFISH:
 
 # 5. CONFIGURE GLASSFISH
 
@@ -1074,13 +1081,15 @@ unless ((
     exit 1;
 }
 
+if( $db_fresh_install )
+{
+goto CONFIG2;
+}
 
 # 7. PRE-POPULATE THE DATABASE:
 # (in this step some pre-supplied content is inserted into the database that we have just created;
 # it is not *necessary* for the application to run in the very basic mode; but some features - certain 
 # types of metadata imports, for example - will be unavailable if it's not done. 
-
-print "\nPre-populating the database:\n\n";
 
 my $psql_command = $psql_exec . "/psql -h " . $CONFIG_DEFAULTS{'POSTGRES_SERVER'} . " -U " . $CONFIG_DEFAULTS{'POSTGRES_USER'} . " -d $CONFIG_DEFAULTS{'POSTGRES_DATABASE'} -f $SQL_REFERENCE_TEMPLATE";
 
@@ -1111,6 +1120,7 @@ unless ( ( my $exitcode = system("$psql_command") ) == 0 )
 else 
 {
     print "\nOK, done!\n";
+}
 }
 
 # Check if the App is running: 
@@ -1180,11 +1190,12 @@ for my $script ( "setup-all.sh" ) {
     print "done!\n";
 }
 
+CONFIG2:
+
 # SOME ADDITIONAL SETTINGS THAT ARE NOT TAKEN CARE OF BY THE setup-all SCRIPT 
 # NEED TO BE CONFIGURED HERE:
 
 print "Making additional configuration changes...\n\n";
-
 
 # a. Configure the Admin email in the Dataverse settings:
 
