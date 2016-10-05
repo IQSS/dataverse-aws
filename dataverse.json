@@ -152,13 +152,26 @@
       "Type": "String",
       "Default": "apitest"
     },
-    "AdminEmail": {
-      "Description": "Email to send admin notifications to", 
+    "DataverseAdminEmail": {
+      "Description": "Email for the dataverseAdmin account", 
       "Type": "String"
     },
     "EmailServer": {
       "Description": "Relay server to send mail", 
       "Type": "String"
+    },
+    "EmailAddress": {
+      "Description": "Address to send email from",
+      "Type": "String"
+    },
+    "EmailUser": {
+      "Description": "Username to use when authenticating against the SMTP server.",
+      "Type": "String"
+    },
+    "EmailPassword": {
+      "Description": "Password for SMTP authentication",
+      "Type": "String",
+      "NoEcho": "true"
     },
     "InstanceType": {
       "Description": "EC2 HVM instance type (m3.medium, etc).",
@@ -849,7 +862,10 @@
                 " -e RSERVE_USER=", "rserve", 
                 " -e RSERVE_PASS=", "rserve", 
                 " -e HOST_ADDRESS=", { "Fn::GetAtt": ["GlassfishLB", "DNSName"] },
-                " -e SMTP_SERVER=", { "Ref": "EmailServer"},
+                " -e SMTP_SERVER=", { "Ref": "EmailServer" },
+                " -e SMTP_EMAIL=", { "Ref": "EmailAddress" },
+                " -e SMTP_USER=", { "Ref": "EmailUser" },
+                " -e SMTP_PASSWORD=", { "Ref": "EmailPassword" },
                 " -e MEM_HEAP_SIZE=", "1536",
                 " -e DOI_AUTHORITY=", { "Ref": "DOIAuthority" },
                 " -e DOI_PASSWORD=", { "Ref": "DOIPassword" },
@@ -882,7 +898,7 @@
                 "        echo -e \"",
                   { "Fn::GetAtt": ["GlassfishLB", "DNSName"] }, "\\n",
                   "\\n",
-                  { "Ref": "AdminEmail" }, "\\n",
+                  { "Ref": "EmailAddress" }, "\\n",
                   { "Ref": "EmailServer"}, "\\n",
                   { "Fn::GetAtt": ["Postgres", "Endpoint.Address"]}, "\\n",
                   { "Fn::GetAtt": ["Postgres", "Endpoint.Port"]}, "\\n", 
@@ -899,8 +915,8 @@
                   "y",
                   "\\n",
                   "\\n",
-                  "\\n\" | docker run -i --name=dataverse-init ", { "Ref": "DockerRepoStringGlassfish" },
-                " bash -c \"cd dvinstall; sed -i 's/\"email\":\"dataverse@mailinator.com\"/\"email\":\"", { "Ref": "AdminEmail" }, "\"/g' /dvinstall/data/user-admin.json; ./install\"\n",
+                  "\\n\" | docker run -i --name=dataverse-init ", { "Ref": "DockerRepoStringGlassfish" }, ":", { "Ref": "DockerTagGlassfish" },
+                " bash -c \"cd dvinstall; sed -i 's/\"email\":\"dataverse@mailinator.com\"/\"email\":\"", { "Ref": "DataverseAdminEmail" }, "\"/g' /dvinstall/data/user-admin.json; ./install\"\n",
                 "        docker stop dataverse-init\n",
                 "        fleetctl submit /home/core/glassfish.service\n",
                 "        curl http://127.0.0.1:2379/v2/keys/dvninit -XPUT -d value=done\n",

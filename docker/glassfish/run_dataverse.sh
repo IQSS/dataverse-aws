@@ -11,7 +11,7 @@ ${ASADMIN} deploy dvinstall/dataverse.war
 ulimit -n 32768
 LANG=en_US.UTF-8; export LANG
 
-[ "${DOI_AUTHORITY}"x != ""x ] && curl -X PUT -d "${DOI_AUTHORITY}" http://localhost:8080/api/admin/settings/:Authority
+[ "x${DOI_AUTHORITY}"x != "x" ] && curl -X PUT -d "${DOI_AUTHORITY}" http://localhost:8080/api/admin/settings/:Authority
 
 # delete old credentials before creating new ones
 "${ASADMIN}" delete-jvm-options "-Ddoi.username=apitest"
@@ -19,6 +19,19 @@ LANG=en_US.UTF-8; export LANG
 
 "${ASADMIN}" delete-jvm-options "-Ddoi.password=apitest"
 "${ASADMIN}" create-jvm-options "-Ddoi.password=${DOI_PASSWORD}"
+
+# If SMTP_USER was set, enable auth
+if [ "x${SMTP_USER}" != "x" ];
+then
+    "${ASADMIN}" delete-javamail-resource mail/notifyMailSession
+    #"${ASADMIN}" create-javamail-resource server.resources.mail-resource.mail/notifyMailSession.user=${SMTP_USER}
+    # From https://java.net/jira/browse/GLASSFISH-13622
+    "${ASADMIN}" create-javamail-resource --mailhost ${SMTP_SERVER} \
+        --fromaddress ${SMTP_EMAIL} --mailuser ${SMTP_USER} \
+        --property mail.smtp.host=${SMTP_SERVER}:mail.smtp.starttls.enable=true:mail.smtp.auth=true:mail.smtp.password=${SMTP_PASSWORD} \
+        mail/notifyMailSession
+
+fi
 
 "${ASADMIN}" stop-domain "${GLASSFISH_DOMAIN}"
 #${ASADMIN} set server.http-service.http-listener.http-listener-1.port=8080
