@@ -1,5 +1,7 @@
 FROM openjdk:8
 
+ENV TERM ${TERM:-xterm}
+
 # Install Solr
 RUN curl -L https://archive.apache.org/dist/lucene/solr/4.6.0/solr-4.6.0.tgz -o solr-4.6.0.tgz
 RUN tar xvf solr-4.6.0.tgz
