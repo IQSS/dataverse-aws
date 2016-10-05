@@ -222,7 +222,8 @@
     },
     "KeyPair": {
       "Description": "The name of an EC2 Key Pair to allow SSH access to the instance.",
-      "Type": "AWS::EC2::KeyPair::KeyName"
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "MinLength": "1"
     },
     "PostgreSQLServerInstanceType": {
       "Description": "RDS instance type (m3.medium, etc).",
@@ -893,43 +894,64 @@
                 "      #Run the docker login command\n",
                 "      docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\n",
                 "\n",
-                "      # Execute ./install only once for the entire stack's lifetime\n",
-                "      if [ $(curl http://127.0.0.1:2379/v2/keys/dvninit?prevExist=false -XPUT -d value=initializing | jq '.errorCode') == \"null\" ]; then\n",
-                "        echo -e \"",
-                  { "Fn::GetAtt": ["GlassfishLB", "DNSName"] }, "\\n",
-                  "\\n",
-                  { "Ref": "EmailAddress" }, "\\n",
-                  { "Ref": "EmailServer"}, "\\n",
-                  { "Fn::GetAtt": ["Postgres", "Endpoint.Address"]}, "\\n",
-                  { "Fn::GetAtt": ["Postgres", "Endpoint.Port"]}, "\\n", 
-                  { "Ref": "PostgreSQLPassword" }, "\\n",
-                  "\\n",
-                  "\\n",
-                  { "Ref": "PostgreSQLDataversePassword" }, "\\n",
-                  { "Fn::GetAtt": ["Solr", "PrivateIp"]}, ":8983\\n",
-                  "\\n",
-                  "\\n",
-                  "\\n",
-                  "\\n",
-                  "\\n",
-                  "y",
-                  "\\n",
-                  "\\n",
-                  "\\n\" | docker run -i --name=dataverse-init ", { "Ref": "DockerRepoStringGlassfish" }, ":", { "Ref": "DockerTagGlassfish" },
-                " bash -c \"cd dvinstall; sed -i 's/\"email\":\"dataverse@mailinator.com\"/\"email\":\"", { "Ref": "DataverseAdminEmail" }, "\"/g' /dvinstall/data/user-admin.json; ./install\"\n",
-                "        docker stop dataverse-init\n",
-                "        fleetctl submit /home/core/glassfish.service\n",
-                "        curl http://127.0.0.1:2379/v2/keys/dvninit -XPUT -d value=done\n",
-                "        fleetctl start glassfish.service\n",
-                "      fi\n",
-                "      while true;\n",
-                "      do\n",
-                "        if [ \"$(etcdctl get /dvninit)\"x == \"done\"x ];\n",
-                "        then\n",
-                "            break;\n",
-                "        fi\n",
-                "        sleep 10\n",
-                "      done\n"
+                {
+                  "Fn::If": [ "UseDBSnapshot",
+                    {
+                      "Fn::Join": [ "",
+                        [
+                          "        fleetctl submit /home/core/glassfish.service\n",
+                          "        fleetctl start glassfish.service\n",
+                          "#        curl http://localhost:8080/api/admin/index/clear",
+                          "\n"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [ "",
+                        [
+                          "      # Execute ./install only once for the entire stack's lifetime\n",
+                          "      if [ $(curl http://127.0.0.1:2379/v2/keys/dvninit?prevExist=false -XPUT -d value=initializing | jq '.errorCode') == \"null\" ]; then\n",
+                          "        echo -e \"",
+                            { "Fn::GetAtt": ["GlassfishLB", "DNSName"] }, "\\n",
+                            "\\n",
+                            { "Ref": "AdminEmail" }, "\\n",
+                            { "Ref": "EmailServer"}, "\\n",
+                            { "Fn::GetAtt": ["Postgres", "Endpoint.Address"]}, "\\n",
+                            { "Fn::GetAtt": ["Postgres", "Endpoint.Port"]}, "\\n", 
+                            { "Ref": "PostgreSQLPassword" }, "\\n",
+                            "\\n",
+                            "\\n",
+                            { "Ref": "PostgreSQLDataversePassword" }, "\\n",
+                            { "Fn::GetAtt": ["Solr", "PrivateIp"]}, ":8983\\n",
+                            "\\n",
+                            "\\n",
+                            "\\n",
+                            "\\n",
+                            "\\n",
+                            "y",
+                            "\\n",
+                            "\\n",
+                            "\\n\" | docker run -i --name=dataverse-init ", { "Ref": "DockerRepoStringGlassfish" },
+                          " bash -c \"cd dvinstall; sed -i 's/\"email\":\"dataverse@mailinator.com\"/\"email\":\"", { "Ref": "AdminEmail" }, "\"/g' /dvinstall/data/user-admin.json; ./install\"\n",
+                          "        docker stop dataverse-init\n",
+                          "        fleetctl submit /home/core/glassfish.service\n",
+                          "        curl http://127.0.0.1:2379/v2/keys/dvninit -XPUT -d value=done\n",
+                          "        fleetctl start glassfish.service\n",
+                          "      fi\n",
+                          "      while true;\n",
+                          "      do\n",
+                          "        if [ \"$(etcdctl get /dvninit)\"x == \"done\"x ];\n",
+                          "        then\n",
+                          "            break;\n",
+                          "        fi\n",
+                          "        sleep 10\n",
+                          "      done\n",
+                          "\n"
+                        ]
+                      ]
+                    }
+                  ]
+                }
               ]
             ]
           }
