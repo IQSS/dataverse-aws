@@ -1,13 +1,13 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Conditions": {
-  	"UseDBSnapshot": {
-  		"Fn::Not": [
-  			{
-  				"Fn::Equals": [ { "Ref": "DBSnapshotName" }, "" ]
-  			}
-  		]
-  	}
+    "UseDBSnapshot": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [ { "Ref": "DBSnapshotName" }, "" ]
+        }
+      ]
+    }
   },
   "Mappings": {
     "RegionMap": {
@@ -222,8 +222,7 @@
     },
     "KeyPair": {
       "Description": "The name of an EC2 Key Pair to allow SSH access to the instance.",
-      "Type": "AWS::EC2::KeyPair::KeyName",
-      "MinLength": "1"
+      "Type": "AWS::EC2::KeyPair::KeyName"
     },
     "PostgreSQLServerInstanceType": {
       "Description": "RDS instance type (m3.medium, etc).",
@@ -852,7 +851,7 @@
                 "      RestartSec=5\n",
                 "      ExecStartPre=-/usr/bin/docker kill dataverse\n",
                 "      ExecStartPre=-/usr/bin/docker rm dataverse\n",
-                "      # ExecStartPre=/usr/bin/bash -c \"docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region ", { "Ref" : "AWS::Region" }, " | sh\"\n",
+                "      # ExecStartPre=/usr/bin/bash -c \"docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\"\n",
                 "      ExecStartPre=/usr/bin/docker pull ", { "Ref": "DockerRepoStringGlassfish"}, ":", { "Ref": "DockerTagGlassfish" }, "\n",
                 "      ExecStartPre=/usr/bin/bash -c \"mount | grep s3fs\"\n",
                 "      ExecStart=/usr/bin/docker run --name=dataverse -v /mnt/dvn:/var/dvn -p 8080:8080",
@@ -891,17 +890,15 @@
                 "      mount --bind /mnt/dvn /mnt/dvn\n",
                 "      mount --make-shared /mnt/dvn\n",
                 "\n",
-                "      #Run the docker login command\n",
-                "      # docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region ", { "Ref" : "AWS::Region" }, " | sh\n",
+                "      # Run the docker login command\n",
+                "      # docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\n",
                 "\n",
                 {
                   "Fn::If": [ "UseDBSnapshot",
                     {
                       "Fn::Join": [ "",
                         [
-                          "        fleetctl submit /home/core/glassfish.service\n",
-                          "        fleetctl start glassfish.service\n",
-                          "#        curl http://localhost:8080/api/admin/index/clear",
+                          "      # UseDBSnapshot=TRUE (restore)\n",
                           "\n"
                         ]
                       ]
@@ -909,6 +906,8 @@
                     {
                       "Fn::Join": [ "",
                         [
+                          "      # UseDBSnapshot=FALSE (install)\n",
+                          "\n",
                           "      # Execute ./install only once for the entire stack's lifetime\n",
                           "      if [ $(curl http://127.0.0.1:2379/v2/keys/dvninit?prevExist=false -XPUT -d value=initializing | jq '.errorCode') == \"null\" ]; then\n",
                           "        echo -e \"",
@@ -951,7 +950,8 @@
                       ]
                     }
                   ]
-                }
+                },
+                "\n"
               ]
             ]
           }
@@ -980,7 +980,7 @@
           "Ref": "KeyPair"
         },
         "SubnetId": {
-        	"Ref": "SolrSubnet1"
+          "Ref": "SolrSubnet1"
         },
         "SecurityGroupIds": [
           {
@@ -1035,20 +1035,20 @@
                 "        Restart=always\n",
                 "        ExecStartPre=-/usr/bin/docker kill solr4\n",
                 "        ExecStartPre=-/usr/bin/docker rm solr4\n",
-                "        # ExecStartPre=/usr/bin/bash -c \"docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region ", { "Ref" : "AWS::Region" }, " | sh\"\n",
+                "        # ExecStartPre=/usr/bin/bash -c \"docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\"\n",
                 "        ExecStartPre=/usr/bin/docker pull ", { "Ref": "DockerRepoStringSolr" }, ":", { "Ref": "DockerTagSolr" }, "\n",
                 "        ExecStart=/usr/bin/docker run --name=solr4 -p 8983:8983 ", { "Ref": "DockerRepoStringSolr" }, ":", { "Ref": "DockerTagSolr" }, "\n",
                 "        ExecStop=/usr/bin/docker stop solr4\n",
                 "\n",
-								"write_files:\n",
-								"  - path: \"/home/core/startup.sh\"\n",
-								"    permissions: \"0755\"\n",
-								"    content: |\n",
-								"      #!/bin/sh\n",
+                "write_files:\n",
+                "  - path: \"/home/core/startup.sh\"\n",
+                "    permissions: \"0755\"\n",
+                "    content: |\n",
+                "      #!/bin/sh\n",
                 "\n",
-								"      #Run the docker login command\n",
-								"      #docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region ", { "Ref" : "AWS::Region" }, " | sh\n",
-								"      \n",
+                "      # Run the docker login command\n",
+                "      # docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\n",
+                "      \n",
                 "\n"
               ]
             ]
@@ -1066,7 +1066,7 @@
           "Ref": "PostgreSQLServerInstanceType"
         },
         "DBSecurityGroups": [ { "Ref": "PostgreSQLSecurityGroup" } ],
-    		"DBSnapshotIdentifier": {
+        "DBSnapshotIdentifier": {
           "Fn::If" : [
             "UseDBSnapshot",
             { "Ref" : "DBSnapshotName" },
