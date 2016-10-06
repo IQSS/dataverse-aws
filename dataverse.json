@@ -931,7 +931,7 @@
                             "y",
                             "\\n",
                             "\\n",
-                            "\\n\" | docker run -i --name=dataverse-init ", { "Ref": "DockerRepoStringGlassfish" },
+                            "\\n\" | docker run -i --name=dataverse-init ", { "Ref": "DockerRepoStringGlassfish" }, ":", { "Ref": "DockerTagGlassfish" },
                           " bash -c \"echo '{\\\"firstName\\\":\\\"Dataverse\",\\\"lastName\\\":\\\"Admin\",\\\"userName\\\":\\\"dataverseAdmin\\\",\\\"affiliation\\\":\\\"Dataverse.org\\\",\\\"position\\\":\\\"Admin\\\",\\\"email\\\":\\\"", { "Ref": "DataverseAdminEmail" }, "\\\"}' > /dvinstall/data/user-admin.json; cat /dvinstall/data/user-admin.json; cd /dvinstall/; ./install\"\n",
                           "        docker stop dataverse-init\n",
                           "        fleetctl submit /home/core/glassfish.service\n",
