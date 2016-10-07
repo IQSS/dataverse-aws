@@ -7,6 +7,13 @@
           "Fn::Equals": [ { "Ref": "DBSnapshotName" }, "" ]
         }
       ]
+    },
+    "UseHTTPS": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [ { "Ref": "CertificateId" }, "" ]
+        }
+      ]
     }
   },
   "Mappings": {
@@ -270,6 +277,10 @@
       "Description": "What Docker tag should be used for pulling and launching solr containers?",
       "Type": "String",
       "Default": "latest"
+    },
+    "CertificateId": { 
+      "Description": "If provided will create an HTTPS endpoint as well. Can be the ARN of an IAM or ACM certificate.",
+      "Type": "String"
     }
   },
   "Resources": {
@@ -480,6 +491,22 @@
             "Protocol": "HTTP",
             "PolicyNames": [
               "GlassfishLBCookieStickinessPolicy"
+            ]
+          },
+          { 
+            "Fn::If" : [
+              "UseHTTPS",
+              {
+                "LoadBalancerPort": "443",
+                "InstancePort": "8181",
+                "InstanceProtocol": "HTTPS",
+                "Protocol": "HTTPS",
+                "SSLCertificateId": { "Ref": "CertificateId" },
+                "PolicyNames": [
+                  "GlassfishLBCookieStickinessPolicy"
+                ]
+              },
+              {"Ref": "AWS::NoValue"}
             ]
           }
         ],
@@ -726,6 +753,12 @@
             "FromPort": "8080",
             "ToPort": "8080",
             "SourceSecurityGroupId": { "Ref": "GlassfishLBSecurityGroup" }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "8181",
+            "ToPort": "8181",
+            "SourceSecurityGroupId": { "Ref": "GlassfishLBSecurityGroup" }
           }
         ],
         "VpcId": {
@@ -854,7 +887,7 @@
                 "      # ExecStartPre=/usr/bin/bash -c \"docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\"\n",
                 "      ExecStartPre=/usr/bin/docker pull ", { "Ref": "DockerRepoStringGlassfish"}, ":", { "Ref": "DockerTagGlassfish" }, "\n",
                 "      ExecStartPre=/usr/bin/bash -c \"mount | grep s3fs\"\n",
-                "      ExecStart=/usr/bin/docker run --name=dataverse -v /mnt/dvn:/var/dvn -p 8080:8080",
+                "      ExecStart=/usr/bin/docker run --name=dataverse -v /mnt/dvn:/var/dvn -p 8080:8080 -p 8181:8181",
                 " -e DB_HOST=", { "Fn::GetAtt": ["Postgres", "Endpoint.Address"]}, 
                 " -e DB_PASS=", { "Ref": "PostgreSQLDataversePassword"},
                 " -e DB_USER=", "dvnapp",
