@@ -13,6 +13,20 @@ LANG=en_US.UTF-8; export LANG
 
 [ "x${DOI_AUTHORITY}"x != "x" ] && curl -X PUT -d "${DOI_AUTHORITY}" http://localhost:8080/api/admin/settings/:Authority
 
+# reset solr location
+echo ""
+curl -X PUT -d ${SOLR_HOST}:8983 http://localhost:8080/api/admin/settings/:SolrHostColonPort
+echo ""
+echo ""
+
+# destructively reindex solr
+curl http://localhost:8080/api/admin/index/clear
+echo ""
+echo ""
+curl http://localhost:8080/api/admin/index
+echo ""
+echo ""
+
 # delete old credentials before creating new ones
 "${ASADMIN}" delete-jvm-options "-Ddoi.username=apitest"
 "${ASADMIN}" create-jvm-options "-Ddoi.username=${DOI_USERNAME}"
@@ -37,3 +51,4 @@ fi
 #${ASADMIN} set server.http-service.http-listener.http-listener-1.port=8080
 #${ASADMIN} set server.http-service.http-listener.http-listener-2.port=8181
 "${ASADMIN}" start-domain --verbose "${GLASSFISH_DOMAIN}"
+

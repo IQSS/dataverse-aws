@@ -14,6 +14,13 @@
           "Fn::Equals": [ { "Ref": "CertificateId" }, "" ]
         }
       ]
+    },
+    "UseDataverseBucketOld": {
+      "Fn::Not": [
+        {
+          "Fn::Equals": [ { "Ref": "DataverseBucketOld" }, "" ]
+        }
+      ]
     }
   },
   "Mappings": {
@@ -139,6 +146,11 @@
     }
   },
   "Parameters": {
+    "DataverseBucketOld": {
+      "Description": "Copy this S3 bucket into new stack",
+      "Type": "String",
+      "Default": ""
+    },
     "DBSnapshotName": {
       "Description": "Leave empty to create new",
       "Type": "String",
@@ -583,7 +595,16 @@
             {
               "Effect": "Allow",
               "Action": "s3:*",
-              "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", {"Ref" : "DataverseBucket"}, "/*"]]}
+              "Resource": {
+                "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "DataverseBucketOld" }, "/*" ] ]
+              }
+            },
+            {
+              "Effect": "Allow",
+              "Action": "s3:*",
+              "Resource": {
+                "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "DataverseBucket" }, "/*" ] ]
+              }
             }
           ]
         }
@@ -622,6 +643,25 @@
         "Type": "AWS::S3::Bucket",
         "Properties": {}
     },
+    "DataverseBucketOldPolicy": {
+        "Type": "AWS::S3::BucketPolicy",
+        "Properties": {
+            "Bucket": { "Ref": "DataverseBucketOld" },
+            "PolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Principal": {
+                            "AWS": { "Fn::GetAtt": [ "DataverseResourceRole", "Arn" ] }
+                        },
+                        "Resource": { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "DataverseBucketOld" } ] ] },
+                        "Action": [ "s3:*" ]
+                    }
+                ]
+            }
+        }
+    },
     "DataverseBucketPolicy": {
         "Type": "AWS::S3::BucketPolicy",
         "Properties": {
@@ -634,9 +674,8 @@
                         "Principal": {
                             "AWS": { "Fn::GetAtt": [ "DataverseResourceRole", "Arn" ] }
                         },
-                        "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "DataverseBucket" } ]]},
-
-                        "Action": ["s3:*"]
+                        "Resource": { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "DataverseBucket" } ] ] },
+                        "Action": [ "s3:*" ]
                     }
                 ]
             }
@@ -884,17 +923,37 @@
                 "      RestartSec=5\n",
                 "      ExecStartPre=-/usr/bin/docker kill dataverse\n",
                 "      ExecStartPre=-/usr/bin/docker rm dataverse\n",
-                "      # ExecStartPre=/usr/bin/bash -c \"docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\"\n",
+                {
+                  "Fn::If": [ "UseDataverseBucketOld",
+                    {
+                      "Fn::Join": [ "",
+                        [
+                          "      # copy s3 bucket\n",
+                          "      #ExecStartPre=/usr/bin/docker run --rm pebbletech/docker-aws-cli aws s3 sync s3://", { "Ref": "DataverseBucketOld" }, " s3://", { "Ref": "DataverseBucket" }, "\n",
+                          "\n"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [ "",
+                        [
+                          "\n"
+                        ]
+                      ]
+                    }
+                  ]
+                },
                 "      ExecStartPre=/usr/bin/docker pull ", { "Ref": "DockerRepoStringGlassfish"}, ":", { "Ref": "DockerTagGlassfish" }, "\n",
                 "      ExecStartPre=/usr/bin/bash -c \"mount | grep s3fs\"\n",
                 "      ExecStart=/usr/bin/docker run --name=dataverse -v /mnt/dvn:/var/dvn -p 8080:8080 -p 8181:8181",
                 " -e DB_HOST=", { "Fn::GetAtt": ["Postgres", "Endpoint.Address"]}, 
                 " -e DB_PASS=", { "Ref": "PostgreSQLDataversePassword"},
                 " -e DB_USER=", "dvnapp",
-                " -e RSERVE_HOST=", "localhost", 
-                " -e RSERVE_USER=", "rserve", 
-                " -e RSERVE_PASS=", "rserve", 
-                " -e HOST_ADDRESS=", { "Fn::GetAtt": ["GlassfishLB", "DNSName"] },
+                " -e RSERVE_HOST=", "localhost",
+                " -e RSERVE_USER=", "rserve",
+                " -e RSERVE_PASS=", "rserve",
+                " -e SOLR_HOST=", { "Fn::GetAtt": [ "Solr", "PrivateIp" ] },
+                " -e HOST_ADDRESS=", { "Fn::GetAtt": [ "GlassfishLB", "DNSName" ] },
                 " -e SMTP_SERVER=", { "Ref": "EmailServer" },
                 " -e SMTP_EMAIL=", { "Ref": "EmailAddress" },
                 " -e SMTP_USER=", { "Ref": "EmailUser" },
@@ -903,7 +962,35 @@
                 " -e DOI_AUTHORITY=", { "Ref": "DOIAuthority" },
                 " -e DOI_PASSWORD=", { "Ref": "DOIPassword" },
                 " -e DOI_USERNAME=", { "Ref": "DOIUsername" },
-                " ", { "Ref": "DockerRepoStringGlassfish"}, ":", { "Ref": "DockerTagGlassfish" }, "\n",
+                " ", { "Ref": "DockerRepoStringGlassfish"}, ":", { "Ref": "DockerTagGlassfish" },
+                "\n",
+                {
+                  "Fn::If": [ "UseDBSnapshot",
+                    {
+                      "Fn::Join": [ "",
+                        [
+                          "      # copy s3 bucket\n",
+                          "      # ExecStartPost=?\n",
+                          "\n"
+                        ]
+                      ]
+                    },
+                    {
+                      "Fn::Join": [ "",
+                        [
+                          "\n"
+                        ]
+                      ]
+                    }
+                  ]
+                },
+                "      # update location of solr\n",
+                "      #ExecStartPost=/usr/bin/docker exec dataverse curl -sX PUT -d ", { "Fn::GetAtt": [ "Solr", "PrivateIp" ] }, ":8983 http://localhost:8080/api/admin/settings/:SolrHostColonPort\n",
+                "\n",
+                "      # reindex solr destructively\n",
+                "      #ExecStartPost=/usr/bin/docker exec dataverse curl -s http://localhost:8080/api/admin/index/clear\n",
+                "      #ExecStartPost=/usr/bin/docker exec dataverse curl -s http://localhost:8080/api/admin/index\n",
+                "\n",
                 "      ExecStop=/usr/bin/docker stop dataverse\n",
                 "\n",
                 "      [X-Fleet]\n",
@@ -925,13 +1012,26 @@
                 "\n",
                 "      # Run the docker login command\n",
                 "      # docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\n",
-                "\n",
                 {
                   "Fn::If": [ "UseDBSnapshot",
                     {
                       "Fn::Join": [ "",
                         [
+                          "\n",
                           "      # UseDBSnapshot=TRUE (restore)\n",
+                          "\n",
+                          "      # manually start glassfish service\n",
+                          "      fleetctl submit /home/core/glassfish.service\n",
+                          "      fleetctl start glassfish.service\n",
+                          "\n",
+                          "      # update location of solr\n",
+                          "      #curl -sX PUT -d ", { "Fn::GetAtt": [ "Solr", "PrivateIp" ] }, ":8983 http://localhost:8080/api/admin/settings/:SolrHostColonPort\n",
+                          "\n",
+                          "      # reindex solr in place\n",
+                          "      #curl -sX DELETE http://localhost:8080/api/admin/index/timestamps\n",
+                          "      # reindex solr destructively\n",
+                          "      #curl -s http://localhost:8080/api/admin/index/clear\n",
+                          "      #curl -s http://localhost:8080/api/admin/index\n",
                           "\n"
                         ]
                       ]
@@ -939,6 +1039,7 @@
                     {
                       "Fn::Join": [ "",
                         [
+                          "\n",
                           "      # UseDBSnapshot=FALSE (install)\n",
                           "\n",
                           "      # Execute ./install only once for the entire stack's lifetime\n",
@@ -984,7 +1085,7 @@
                     }
                   ]
                 },
-                "\n"
+                "      # end of startup.sh\n"
               ]
             ]
           }
