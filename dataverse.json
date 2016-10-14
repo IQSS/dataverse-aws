@@ -644,42 +644,43 @@
         "Properties": {}
     },
     "DataverseBucketOldPolicy": {
-        "Type": "AWS::S3::BucketPolicy",
-        "Properties": {
-            "Bucket": { "Ref": "DataverseBucketOld" },
-            "PolicyDocument": {
-                "Version": "2012-10-17",
-                "Statement": [
-                    {
-                        "Effect": "Allow",
-                        "Principal": {
-                            "AWS": { "Fn::GetAtt": [ "DataverseResourceRole", "Arn" ] }
-                        },
-                        "Resource": { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "DataverseBucketOld" } ] ] },
-                        "Action": [ "s3:*" ]
-                    }
-                ]
+      "Type": "AWS::S3::BucketPolicy",
+      "Condition": "UseDataverseBucketOld",
+      "Properties": {
+        "Bucket": { "Ref" : "DataverseBucketOld" },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": { "Fn::GetAtt": [ "DataverseResourceRole", "Arn" ] }
+              },
+              "Resource": { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "DataverseBucketOld" } ] ] },
+              "Action": [ "s3:*" ]
             }
+          ]
         }
+      }
     },
     "DataverseBucketPolicy": {
-        "Type": "AWS::S3::BucketPolicy",
-        "Properties": {
-            "Bucket": { "Ref": "DataverseBucket" },
-            "PolicyDocument": {
-                "Version": "2012-10-17",
-                "Statement": [
-                    {
-                        "Effect": "Allow",
-                        "Principal": {
-                            "AWS": { "Fn::GetAtt": [ "DataverseResourceRole", "Arn" ] }
-                        },
-                        "Resource": { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "DataverseBucket" } ] ] },
-                        "Action": [ "s3:*" ]
-                    }
-                ]
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": { "Ref": "DataverseBucket" },
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": { "Fn::GetAtt": [ "DataverseResourceRole", "Arn" ] }
+              },
+              "Resource": { "Fn::Join" : [ "", [ "arn:aws:s3:::", { "Ref" : "DataverseBucket" } ] ] },
+              "Action": [ "s3:*" ]
             }
+          ]
         }
+      }
     },
     "DataverseResourceRole": {
       "Type": "AWS::IAM::Role",
