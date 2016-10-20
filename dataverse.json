@@ -189,8 +189,7 @@
     },
     "EmailPassword": {
       "Description": "Password for SMTP authentication",
-      "Type": "String",
-      "NoEcho": "true"
+      "Type": "String"
     },
     "InstanceType": {
       "Description": "EC2 HVM instance type (m3.medium, etc).",
@@ -251,14 +250,12 @@
     },
     "PostgreSQLPassword": {
       "Default": "root1234",
-      "NoEcho": "true",
       "Description": "The database admin account password",
       "Type": "String",
       "MinLength": "8"
     },
     "PostgreSQLDataversePassword": {
       "Default": "root1234",
-      "NoEcho": "true",
       "Description": "The database user account password",
       "Type": "String",
       "MinLength": "8"
