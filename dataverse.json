@@ -503,19 +503,16 @@
             ]
           },
           { 
-            "Fn::If" : [
-              "UseHTTPS",
+            "Fn::If": [ "UseHTTPS",
               {
                 "LoadBalancerPort": "443",
                 "InstancePort": "8181",
                 "InstanceProtocol": "HTTPS",
                 "Protocol": "HTTPS",
                 "SSLCertificateId": { "Ref": "CertificateId" },
-                "PolicyNames": [
-                  "GlassfishLBCookieStickinessPolicy"
-                ]
+                "PolicyNames": [ "GlassfishLBCookieStickinessPolicy" ]
               },
-              {"Ref": "AWS::NoValue"}
+              { "Ref": "AWS::NoValue" }
             ]
           }
         ],
@@ -945,7 +942,7 @@
                 "      ExecStartPre=/usr/bin/docker pull ", { "Ref": "DockerRepoStringGlassfish"}, ":", { "Ref": "DockerTagGlassfish" }, "\n",
                 "      ExecStartPre=/usr/bin/bash -c \"mount | grep s3fs\"\n",
                 "      ExecStartPre=-/usr/bin/bash -c \"[ -d /var/dvn/data ] && mkdir /var/dvn/data\"\n",
-                "      #ExecStartPre=-/usr/bin/bash -c \"[ -d /var/dvn/docroot ] && mkdir /var/dvn/docroot\"\n",
+                "      # ExecStartPre=-/usr/bin/bash -c \"[ -d /var/dvn/docroot ] && mkdir /var/dvn/docroot\"\n",
                 "      ExecStart=/usr/bin/docker run --name=dataverse -v /mnt/dvn/data:/var/dvn/data -v /mnt/dvn/docroot:/usr/local/glassfish4/glassfish/domains/domain1/docroot -p 8080:8080 -p 8181:8181",
                 " -e DB_HOST=", { "Fn::GetAtt": ["Postgres", "Endpoint.Address"]}, 
                 " -e DB_PASS=", { "Ref": "PostgreSQLDataversePassword"},
@@ -964,33 +961,6 @@
                 " -e DOI_PASSWORD=", { "Ref": "DOIPassword" },
                 " -e DOI_USERNAME=", { "Ref": "DOIUsername" },
                 " ", { "Ref": "DockerRepoStringGlassfish"}, ":", { "Ref": "DockerTagGlassfish" },
-                "\n",
-                {
-                  "Fn::If": [ "UseDBSnapshot",
-                    {
-                      "Fn::Join": [ "",
-                        [
-                          "      # copy s3 bucket\n",
-                          "      # ExecStartPost=?\n",
-                          "\n"
-                        ]
-                      ]
-                    },
-                    {
-                      "Fn::Join": [ "",
-                        [
-                          "\n"
-                        ]
-                      ]
-                    }
-                  ]
-                },
-                "      # update location of solr\n",
-                "      #ExecStartPost=/usr/bin/docker exec dataverse curl -sX PUT -d ", { "Fn::GetAtt": [ "Solr", "PrivateIp" ] }, ":8983 http://localhost:8080/api/admin/settings/:SolrHostColonPort\n",
-                "\n",
-                "      # reindex solr destructively\n",
-                "      #ExecStartPost=/usr/bin/docker exec dataverse curl -s http://localhost:8080/api/admin/index/clear\n",
-                "      #ExecStartPost=/usr/bin/docker exec dataverse curl -s http://localhost:8080/api/admin/index\n",
                 "\n",
                 "      ExecStop=/usr/bin/docker stop dataverse\n",
                 "\n",
@@ -1024,15 +994,6 @@
                           "      # manually start glassfish service\n",
                           "      fleetctl submit /home/core/glassfish.service\n",
                           "      fleetctl start glassfish.service\n",
-                          "\n",
-                          "      # update location of solr\n",
-                          "      #curl -sX PUT -d ", { "Fn::GetAtt": [ "Solr", "PrivateIp" ] }, ":8983 http://localhost:8080/api/admin/settings/:SolrHostColonPort\n",
-                          "\n",
-                          "      # reindex solr in place\n",
-                          "      #curl -sX DELETE http://localhost:8080/api/admin/index/timestamps\n",
-                          "      # reindex solr destructively\n",
-                          "      #curl -s http://localhost:8080/api/admin/index/clear\n",
-                          "      #curl -s http://localhost:8080/api/admin/index\n",
                           "\n"
                         ]
                       ]
@@ -1046,17 +1007,17 @@
                           "      # Execute ./install only once for the entire stack's lifetime\n",
                           "      if [ $(curl http://127.0.0.1:2379/v2/keys/dvninit?prevExist=false -XPUT -d value=initializing | jq '.errorCode') == \"null\" ]; then\n",
                           "        echo -e \"",
-                            { "Fn::GetAtt": ["GlassfishLB", "DNSName"] }, "\\n",
+                            { "Fn::GetAtt": [ "GlassfishLB", "DNSName" ] }, "\\n",
                             "\\n",
                             { "Ref": "EmailAddress" }, "\\n",
-                            { "Ref": "EmailServer"}, "\\n",
-                            { "Fn::GetAtt": ["Postgres", "Endpoint.Address"]}, "\\n",
-                            { "Fn::GetAtt": ["Postgres", "Endpoint.Port"]}, "\\n", 
+                            { "Ref": "EmailServer" }, "\\n",
+                            { "Fn::GetAtt": [ "Postgres", "Endpoint.Address" ]}, "\\n",
+                            { "Fn::GetAtt": [ "Postgres", "Endpoint.Port" ]}, "\\n", 
                             { "Ref": "PostgreSQLPassword" }, "\\n",
                             "\\n",
                             "\\n",
                             { "Ref": "PostgreSQLDataversePassword" }, "\\n",
-                            { "Fn::GetAtt": ["Solr", "PrivateIp"]}, ":8983\\n",
+                            { "Fn::GetAtt": [ "Solr", "PrivateIp" ]}, ":8983\\n",
                             "\\n",
                             "\\n",
                             "\\n",
@@ -1197,7 +1158,7 @@
         "AllocatedStorage": { "Ref": "PostgreSQLAllocatedStorage" },
         "DBInstanceClass": { "Ref": "PostgreSQLServerInstanceType" },
         "DBSnapshotIdentifier": {
-          "Fn::If" : [ "UseDBSnapshot",
+          "Fn::If": [ "UseDBSnapshot",
             { "Ref" : "DBSnapshotName" },
             { "Ref" : "AWS::NoValue" }
           ]
