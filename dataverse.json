@@ -713,15 +713,16 @@
       }
     },
     "PostgreSQLSecurityGroup": {
-      "Type": "AWS::RDS::DBSecurityGroup",
+      "Type": "AWS::EC2::SecurityGroup",
       "Properties": {
         "GroupDescription": "PostgreSQL database security group",
-        "EC2VpcId": { "Ref": "VPC" },
-        "DBSecurityGroupIngress": [
-          {
-            "EC2SecurityGroupId": { "Ref": "GlassfishSecurityGroup" }
-          }
-        ]
+        "SecurityGroupIngress": [ {
+          "IpProtocol": "tcp",
+          "FromPort": "5432",
+          "ToPort": "5432",
+          "SourceSecurityGroupId": { "Ref": "GlassfishSecurityGroup" }
+        } ],
+        "VpcId": { "Ref": "VPC" }
       }
     },
     "SolrSecurityGroup": {
@@ -926,8 +927,8 @@
                     {
                       "Fn::Join": [ "",
                         [
-                          "      # copy s3 bucket\n",
-                          "      #ExecStartPre=/usr/bin/docker run --rm pebbletech/docker-aws-cli aws s3 sync s3://", { "Ref": "DataverseBucketOld" }, " s3://", { "Ref": "DataverseBucket" }, "\n",
+                          "      # one-time copy of s3 bucket\n",
+                          "      ExecStartPre=/usr/bin/docker run --rm pebbletech/docker-aws-cli aws s3 sync s3://", { "Ref": "DataverseBucketOld" }, " s3://", { "Ref": "DataverseBucket" }, "\n",
                           "\n"
                         ]
                       ]
@@ -943,7 +944,9 @@
                 },
                 "      ExecStartPre=/usr/bin/docker pull ", { "Ref": "DockerRepoStringGlassfish"}, ":", { "Ref": "DockerTagGlassfish" }, "\n",
                 "      ExecStartPre=/usr/bin/bash -c \"mount | grep s3fs\"\n",
-                "      ExecStart=/usr/bin/docker run --name=dataverse -v /mnt/dvn:/var/dvn -p 8080:8080 -p 8181:8181",
+                "      ExecStartPre=-/usr/bin/bash -c \"[ -d /var/dvn/data ] && mkdir /var/dvn/data\"\n",
+                "      #ExecStartPre=-/usr/bin/bash -c \"[ -d /var/dvn/docroot ] && mkdir /var/dvn/docroot\"\n",
+                "      ExecStart=/usr/bin/docker run --name=dataverse -v /mnt/dvn/data:/var/dvn/data -v /mnt/dvn/docroot:/usr/local/glassfish4/glassfish/domains/domain1/docroot -p 8080:8080 -p 8181:8181",
                 " -e DB_HOST=", { "Fn::GetAtt": ["Postgres", "Endpoint.Address"]}, 
                 " -e DB_PASS=", { "Ref": "PostgreSQLDataversePassword"},
                 " -e DB_USER=", "dvnapp",
@@ -1191,16 +1194,10 @@
     "Postgres": {
       "Type": "AWS::RDS::DBInstance",
       "Properties": {
-        "AllocatedStorage": {
-          "Ref": "PostgreSQLAllocatedStorage"
-        },
-        "DBInstanceClass": {
-          "Ref": "PostgreSQLServerInstanceType"
-        },
-        "DBSecurityGroups": [ { "Ref": "PostgreSQLSecurityGroup" } ],
+        "AllocatedStorage": { "Ref": "PostgreSQLAllocatedStorage" },
+        "DBInstanceClass": { "Ref": "PostgreSQLServerInstanceType" },
         "DBSnapshotIdentifier": {
-          "Fn::If" : [
-            "UseDBSnapshot",
+          "Fn::If" : [ "UseDBSnapshot",
             { "Ref" : "DBSnapshotName" },
             { "Ref" : "AWS::NoValue" }
           ]
@@ -1208,9 +1205,8 @@
         "DBSubnetGroupName": { "Ref": "PostgreSQLSubnetGroup" },
         "Engine": "postgres",
         "MasterUsername": "postgres",
-        "MasterUserPassword": {
-          "Ref": "PostgreSQLPassword"
-        }
+        "MasterUserPassword": { "Ref": "PostgreSQLPassword" },
+        "VPCSecurityGroups": [ { "Fn::GetAtt": [ "PostgreSQLSecurityGroup", "GroupId" ] } ]
       }
     }
   }
