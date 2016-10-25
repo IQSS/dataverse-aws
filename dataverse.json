@@ -1,26 +1,25 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Conditions": {
+    "UseHostAddress": {
+      "Fn::Not": [ {
+        "Fn::Equals": [ { "Ref": "HostAddress" }, "" ]
+      } ]
+    },
     "UseDBSnapshot": {
-      "Fn::Not": [
-        {
-          "Fn::Equals": [ { "Ref": "DBSnapshotName" }, "" ]
-        }
-      ]
+      "Fn::Not": [ {
+        "Fn::Equals": [ { "Ref": "DBSnapshotName" }, "" ]
+      } ]
     },
     "UseHTTPS": {
-      "Fn::Not": [
-        {
-          "Fn::Equals": [ { "Ref": "CertificateId" }, "" ]
-        }
-      ]
+      "Fn::Not": [ {
+        "Fn::Equals": [ { "Ref": "CertificateId" }, "" ]
+      } ]
     },
     "UseDataverseBucketOld": {
-      "Fn::Not": [
-        {
-          "Fn::Equals": [ { "Ref": "DataverseBucketOld" }, "" ]
-        }
-      ]
+      "Fn::Not": [ {
+        "Fn::Equals": [ { "Ref": "DataverseBucketOld" }, "" ]
+      } ]
     }
   },
   "Mappings": {
@@ -146,6 +145,11 @@
     }
   },
   "Parameters": {
+    "HostAddress": {
+      "Description": "Optionally install with a CName (leave blank to use load balancer instead)",
+      "Type": "String",
+      "Default": ""
+    },
     "DataverseBucketOld": {
       "Description": "Copy this S3 bucket into new stack",
       "Type": "String",
@@ -812,34 +816,14 @@
       }
     },
     "GlassfishLC": {
-      "DependsOn": [
-        "Solr"
-      ],
+      "DependsOn": [ "Solr" ],
       "Type": "AWS::AutoScaling::LaunchConfiguration",
       "Properties": {
-        "IamInstanceProfile": {
-          "Ref": "DataverseInstanceProfile"
-        },
-        "ImageId": {
-          "Fn::FindInMap": [
-            "RegionMap",
-            {
-              "Ref": "AWS::Region"
-            },
-            "AMI"
-          ]
-        },
-        "InstanceType": {
-          "Ref": "InstanceType"
-        },
-        "KeyName": {
-          "Ref": "KeyPair"
-        },
-        "SecurityGroups": [
-          {
-            "Ref": "GlassfishSecurityGroup"
-          }
-        ],
+        "IamInstanceProfile": { "Ref": "DataverseInstanceProfile" },
+        "ImageId": { "Fn::FindInMap": [ "RegionMap", { "Ref": "AWS::Region" }, "AMI" ] },
+        "InstanceType": { "Ref": "InstanceType" },
+        "KeyName": { "Ref": "KeyPair" },
+        "SecurityGroups": [ { "Ref": "GlassfishSecurityGroup" } ],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [
@@ -951,7 +935,11 @@
                 " -e RSERVE_USER=", "rserve",
                 " -e RSERVE_PASS=", "rserve",
                 " -e SOLR_HOST=", { "Fn::GetAtt": [ "Solr", "PrivateIp" ] },
-                " -e HOST_ADDRESS=", { "Fn::GetAtt": [ "GlassfishLB", "DNSName" ] },
+                " -e HOST_ADDRESS=",
+                { "Fn::If": [ "UseHostAddress",
+                  { "Ref": "HostAddress" },
+                  { "Fn::GetAtt": [ "GlassfishLB", "DNSName" ] }
+                ] },
                 " -e SMTP_SERVER=", { "Ref": "EmailServer" },
                 " -e SMTP_EMAIL=", { "Ref": "EmailAddress" },
                 " -e SMTP_USER=", { "Ref": "EmailUser" },
@@ -1007,7 +995,10 @@
                           "      # Execute ./install only once for the entire stack's lifetime\n",
                           "      if [ $(curl http://127.0.0.1:2379/v2/keys/dvninit?prevExist=false -XPUT -d value=initializing | jq '.errorCode') == \"null\" ]; then\n",
                           "        echo -e \"",
-                            { "Fn::GetAtt": [ "GlassfishLB", "DNSName" ] }, "\\n",
+                            { "Fn::If": [ "UseHostAddress",
+                              { "Ref": "HostAddress" },
+                              { "Fn::GetAtt": [ "GlassfishLB", "DNSName" ] }
+                            ] }, "\\n",
                             "\\n",
                             { "Ref": "EmailAddress" }, "\\n",
                             { "Ref": "EmailServer" }, "\\n",
@@ -1115,11 +1106,11 @@
                 "        [Install]\n",
                 "        WantedBy=multi-user.target\n",
                 "\n",
-                "    - name: solr4.service\n",
+                "    - name: solr.service\n",
                 "      command: start\n",
                 "      content: |\n",
                 "        [Unit]\n",
-                "        Description=Solr 4 container\n",
+                "        Description=Solr 4.6.0 container for Dataverse application\n",
                 "        After=docker.service\n",
                 "        After=etcd2.service\n",
                 "        After=network-online.target\n",
@@ -1129,12 +1120,13 @@
                 "\n",
                 "        [Service]\n",
                 "        Restart=always\n",
-                "        ExecStartPre=-/usr/bin/docker kill solr4\n",
-                "        ExecStartPre=-/usr/bin/docker rm solr4\n",
+                "        ExecStartPre=-/usr/bin/docker kill solr\n",
+                "        ExecStartPre=-/usr/bin/docker rm solr\n",
                 "        # ExecStartPre=/usr/bin/bash -c \"docker run --rm pebbletech/docker-aws-cli aws ecr get-login --region us-east-1 | sh\"\n",
                 "        ExecStartPre=/usr/bin/docker pull ", { "Ref": "DockerRepoStringSolr" }, ":", { "Ref": "DockerTagSolr" }, "\n",
-                "        ExecStart=/usr/bin/docker run --name=solr4 -p 8983:8983 ", { "Ref": "DockerRepoStringSolr" }, ":", { "Ref": "DockerTagSolr" }, "\n",
-                "        ExecStop=/usr/bin/docker stop solr4\n",
+                "        ExecStartPre=-/usr/bin/chmod 777 /mnt/index\n",
+                "        ExecStart=/usr/bin/docker run --name=solr -v /mnt/index:/usr/local/solr-4.6.0/example/solr/collection1/data/index -p 8983:8983 ", { "Ref": "DockerRepoStringSolr" }, ":", { "Ref": "DockerTagSolr" }, "\n",
+                "        ExecStop=/usr/bin/docker stop solr\n",
                 "\n",
                 "write_files:\n",
                 "  - path: \"/home/core/startup.sh\"\n",
