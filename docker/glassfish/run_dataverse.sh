@@ -20,10 +20,10 @@ echo ""
 echo ""
 
 # destructively reindex solr
-curl http://localhost:8080/api/admin/index/clear
+#curl http://localhost:8080/api/admin/index/clear
 echo ""
 echo ""
-curl http://localhost:8080/api/admin/index
+#curl http://localhost:8080/api/admin/index
 echo ""
 echo ""
 

@@ -910,14 +910,14 @@
                         [
                           "      # one-time copy of s3 bucket\n",
                           "      ExecStartPre=/usr/bin/docker run --rm pebbletech/docker-aws-cli aws s3 sync s3://", { "Ref": "DataverseBucketOld" }, " s3://", { "Ref": "DataverseBucket" }, "\n",
-                          "\n"
+                          ""
                         ]
                       ]
                     },
                     {
                       "Fn::Join": [ "",
                         [
-                          "\n"
+                          ""
                         ]
                       ]
                     }
@@ -926,7 +926,6 @@
                 "      ExecStartPre=/usr/bin/docker pull ", { "Ref": "DockerRepoStringGlassfish"}, ":", { "Ref": "DockerTagGlassfish" }, "\n",
                 "      ExecStartPre=/usr/bin/bash -c \"mount | grep s3fs\"\n",
                 "      ExecStartPre=-/usr/bin/bash -c \"[ -d /var/dvn/data ] && mkdir /var/dvn/data\"\n",
-                "      # ExecStartPre=-/usr/bin/bash -c \"[ -d /var/dvn/docroot ] && mkdir /var/dvn/docroot\"\n",
                 "      ExecStart=/usr/bin/docker run --name=dataverse -v /mnt/dvn/data:/var/dvn/data -v /mnt/dvn/docroot:/usr/local/glassfish4/glassfish/domains/domain1/docroot -p 8080:8080 -p 8181:8181",
                 " -e DB_HOST=", { "Fn::GetAtt": ["Postgres", "Endpoint.Address"]}, 
                 " -e DB_PASS=", { "Ref": "PostgreSQLDataversePassword"},
@@ -936,10 +935,10 @@
                 " -e RSERVE_PASS=", "rserve",
                 " -e SOLR_HOST=", { "Fn::GetAtt": [ "Solr", "PrivateIp" ] },
                 " -e HOST_ADDRESS=",
-                { "Fn::If": [ "UseHostAddress",
-                  { "Ref": "HostAddress" },
-                  { "Fn::GetAtt": [ "GlassfishLB", "DNSName" ] }
-                ] },
+                  { "Fn::If": [ "UseHostAddress",
+                    { "Ref": "HostAddress" },
+                    { "Fn::GetAtt": [ "GlassfishLB", "DNSName" ] }
+                  ] }, "\\n",
                 " -e SMTP_SERVER=", { "Ref": "EmailServer" },
                 " -e SMTP_EMAIL=", { "Ref": "EmailAddress" },
                 " -e SMTP_USER=", { "Ref": "EmailUser" },
