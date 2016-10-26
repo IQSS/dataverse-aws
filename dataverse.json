@@ -490,6 +490,10 @@
     "GlassfishLB": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
+        "ConnectionDrainingPolicy": {
+          "Enabled": "true",
+          "Timeout": "300"
+        },
         "CrossZone": "true",
         "LBCookieStickinessPolicy": [
           {
@@ -502,23 +506,19 @@
             "LoadBalancerPort": "80",
             "InstancePort": "8080",
             "Protocol": "HTTP",
-            "PolicyNames": [
-              "GlassfishLBCookieStickinessPolicy"
-            ]
+            "PolicyNames": [ "GlassfishLBCookieStickinessPolicy" ]
           },
-          { 
-            "Fn::If": [ "UseHTTPS",
-              {
-                "LoadBalancerPort": "443",
-                "InstancePort": "8181",
-                "InstanceProtocol": "HTTPS",
-                "Protocol": "HTTPS",
-                "SSLCertificateId": { "Ref": "CertificateId" },
-                "PolicyNames": [ "GlassfishLBCookieStickinessPolicy" ]
-              },
-              { "Ref": "AWS::NoValue" }
-            ]
-          }
+          { "Fn::If": [ "UseHTTPS",
+            {
+              "LoadBalancerPort": "443",
+              "InstancePort": "8181",
+              "InstanceProtocol": "HTTPS",
+              "Protocol": "HTTPS",
+              "SSLCertificateId": { "Ref": "CertificateId" },
+              "PolicyNames": [ "GlassfishLBCookieStickinessPolicy" ]
+            },
+            { "Ref": "AWS::NoValue" }
+          ] }
         ],
         "HealthCheck": {
           "Target": "HTTP:8080/loginpage.xhtml",
@@ -531,20 +531,12 @@
             { "Ref": "GlassfishLBSecurityGroup" }
         ],
         "Subnets": [
-          {
-            "Ref": "Subnet1"
-          },
-          {
-            "Ref": "Subnet3"
-          },
-          {
-            "Ref": "Subnet2"
-          }
+          { "Ref": "Subnet1" },
+          { "Ref": "Subnet3" },
+          { "Ref": "Subnet2" }
         ]
       },
-      "DependsOn": [
-        "Gateway"
-      ]
+      "DependsOn": [ "Gateway" ]
     },
     "GlassfishASG": {
       "Type": "AWS::AutoScaling::AutoScalingGroup",
@@ -914,13 +906,7 @@
                         ]
                       ]
                     },
-                    {
-                      "Fn::Join": [ "",
-                        [
-                          ""
-                        ]
-                      ]
-                    }
+                    { "Ref": "AWS::NoValue" }
                   ]
                 },
                 "      ExecStartPre=/usr/bin/docker pull ", { "Ref": "DockerRepoStringGlassfish"}, ":", { "Ref": "DockerTagGlassfish" }, "\n",
