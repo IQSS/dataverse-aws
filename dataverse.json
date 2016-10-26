@@ -542,33 +542,19 @@
       "Type": "AWS::AutoScaling::AutoScalingGroup",
       "Properties": {
         "AvailabilityZones": [ 
-          { "Fn::Select": [ "0", {"Fn::GetAZs": ""}]},
-          { "Fn::Select": [ "1", {"Fn::GetAZs": ""}]},
-          { "Fn::Select": [ "2", {"Fn::GetAZs": ""}]}
+          { "Fn::Select": [ "0", { "Fn::GetAZs": "" } ] },
+          { "Fn::Select": [ "1", { "Fn::GetAZs": "" } ] },
+          { "Fn::Select": [ "2", { "Fn::GetAZs": "" } ] }
         ],
-        "LaunchConfigurationName": {
-          "Ref": "GlassfishLC"
-        },
+        "LaunchConfigurationName": { "Ref": "GlassfishLC" },
         "MinSize": "3",
         "MaxSize": "6",
-        "DesiredCapacity": {
-          "Ref": "ClusterSize"
-        },
-        "LoadBalancerNames": [
-          {
-            "Ref": "GlassfishLB"
-          }
-        ],
+        "DesiredCapacity": { "Ref": "ClusterSize" },
+        "LoadBalancerNames": [ { "Ref": "GlassfishLB" } ],
         "VPCZoneIdentifier": [
-          {
-            "Ref": "Subnet3"
-          },
-          {
-            "Ref": "Subnet2"
-          },
-          {
-            "Ref": "Subnet1"
-          }
+          { "Ref": "Subnet3" },
+          { "Ref": "Subnet2" },
+          { "Ref": "Subnet1" }
         ]
       }
     },
@@ -924,7 +910,7 @@
                   { "Fn::If": [ "UseHostAddress",
                     { "Ref": "HostAddress" },
                     { "Fn::GetAtt": [ "GlassfishLB", "DNSName" ] }
-                  ] }, "\\n",
+                  ] },
                 " -e SMTP_SERVER=", { "Ref": "EmailServer" },
                 " -e SMTP_EMAIL=", { "Ref": "EmailAddress" },
                 " -e SMTP_USER=", { "Ref": "EmailUser" },
@@ -1033,9 +1019,7 @@
     "Solr": {
       "Type": "AWS::EC2::Instance",
       "Properties": {
-        "IamInstanceProfile": {
-          "Ref": "DataverseInstanceProfile"
-        },
+        "IamInstanceProfile": { "Ref": "DataverseInstanceProfile" },
         "ImageId": {
           "Fn::FindInMap": [
             "RegionMap",
@@ -1045,15 +1029,9 @@
             "AMI"
           ]
         },
-        "InstanceType": {
-          "Ref": "SolrInstanceType"
-        },
-        "KeyName": {
-          "Ref": "KeyPair"
-        },
-        "SubnetId": {
-          "Ref": "SolrSubnet1"
-        },
+        "InstanceType": { "Ref": "SolrInstanceType" },
+        "KeyName": { "Ref": "KeyPair" },
+        "SubnetId": { "Ref": "SolrSubnet1" },
         "SecurityGroupIds": [
           {
             "Fn::GetAtt": [ "SolrSecurityGroup", "GroupId" ]
