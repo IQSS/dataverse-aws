@@ -1109,6 +1109,7 @@
     },
     "Postgres": {
       "Type": "AWS::RDS::DBInstance",
+      "DeletionPolicy" : "Snapshot",
       "Properties": {
         "AllocatedStorage": { "Ref": "PostgreSQLAllocatedStorage" },
         "DBInstanceClass": { "Ref": "PostgreSQLServerInstanceType" },
