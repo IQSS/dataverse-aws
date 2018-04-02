@@ -18,6 +18,7 @@ echo "starting to build stack $1" \
 			ParameterKey=DockerRepoStringSolr,ParameterValue=vtti/dataverse-solr \
 			ParameterKey=DockerTagGlassfish,ParameterValue=latest \
 			ParameterKey=DockerTagSolr,ParameterValue=latest \
+			ParameterKey=DOIProvider,ParameterValue=EZID \
 			ParameterKey=DOIAuthority,ParameterValue=10.5072/FK2 \
 			ParameterKey=DOIPassword,ParameterValue=apitest \
 			ParameterKey=DOIUsername,ParameterValue=apitest \
