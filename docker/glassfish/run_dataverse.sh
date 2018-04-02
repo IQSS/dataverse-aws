@@ -27,12 +27,15 @@ echo ""
 echo ""
 echo ""
 
+
 # delete old credentials before creating new ones
 "${ASADMIN}" delete-jvm-options "-Ddoi.username=apitest"
 "${ASADMIN}" create-jvm-options "-Ddoi.username=${DOI_USERNAME}"
-
 "${ASADMIN}" delete-jvm-options "-Ddoi.password=apitest"
 "${ASADMIN}" create-jvm-options "-Ddoi.password=${DOI_PASSWORD}"
+"${ASADMIN}" delete-jvm-options "-Ddoi.baseurlstring=https\://ezid.cdlib.org"
+"${ASADMIN}" create-jvm-options "-Ddoi.baseurlstring=https\://mds.datacite.org"
+
 
 # If SMTP_USER was set, enable auth
 if [ "x${SMTP_USER}" != "x" ];

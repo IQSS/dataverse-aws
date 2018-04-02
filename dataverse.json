@@ -89,6 +89,7 @@
         "PostgreSQLDataversePassword": { "default": "Postgres user password" },
         "DBSnapshotName": { "default": "Restore database from snapshot" },
 
+        "DOIProvider": { "default": "DOI provider (EZID, DataCite)" },
         "DOIAuthority": { "default": "DOI authority (shoulder)" },
         "DOIUsername": { "default": "DOI username" },
         "DOIPassword": { "default": "DOI password" },
